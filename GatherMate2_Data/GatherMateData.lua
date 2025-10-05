@@ -3,52 +3,37 @@ local GatherMateData = LibStub("AceAddon-3.0"):NewAddon("GatherMate2_Data")
 local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 
 local bcZones = {
-	[464] = true,
-	[476] = true,
-	[471] = true,
-	[462] = true,
-	[463] = true,
-	[499] = true,
-	[480] = true,
-	[475] = true,
-	[465] = true,
-	[477] = true,
-	[479] = true,
-	[473] = true,
-	[481] = true,
-	[478] = true,
-	[467] = true,
+	[3522] = true, -- Blade's Edge Mountains
+	[3483] = true, -- Hellfire Peninsula
+	[3518] = true, -- Nagrand
+	[3523] = true, -- Netherstorm
+	[3520] = true, -- Shadowmoon Valley
+	[3703] = true, -- Shattrath City
+	[3519] = true, -- Terokkar Forest
+	[3521] = true, -- Zangarmarsh
+	[3430] = true, -- Eversong Woods
+	[3433] = true, -- Ghostlands
+	[4080] = true, -- Isle of Quel'Danas
+	[3487] = true, -- Silvermoon City
+	[3524] = true, -- Azuremyst Isle
+	[3525] = true, -- Bloodmyst Isle
+	[3557] = true, -- The Exodar
 }
 -- FIX to new Zone numbers
 local wrathZones = {
-	[486] = true,
-	[510] = true,
-	[504] = true,
-	[488] = true,
-	[490] = true,
-	[491] = true,
-	[541] = true,
-	[492] = true,
-	[493] = true,
-	[495] = true,
-	[501] = true,
-	[496] = true,
-}
-
-local cataZones = {
-	[606] = true,
-	[684] = true,
-	[685] = true,
-	[615] = true,
-	[708] = true,
-	[709] = true,
-	[700] = true,
-	[613] = true,
-	[614] = true,
-	[640] = true,
-	[605] = true,
-	[544] = true,
-	[737] = true,
+	[3537] = true, -- Borean Tundra
+	[2817] = true, -- Crystalsong Forest
+	[4395] = true, -- Dalaran
+	[65] = true, -- Dragonblight
+	[394] = true, -- Grizzly Hills
+	[495] = true, -- Howling Fjord
+	[4742] = true, -- Hrothgar's Landing
+	[210] = true, -- Icecrown
+	[3711] = true, -- Sholazar Basin
+	[67] = true, -- The Storm Peaks
+	[4197] = true, -- Wintergrasp
+	[66] = true, -- Zul'Drak
+	[4298] = true, -- Plaguelands: The Scarlet Enclave
 }
 
 function GatherMateData:PerformMerge(dbs,style, zoneFilter)
@@ -58,85 +43,29 @@ function GatherMateData:PerformMerge(dbs,style, zoneFilter)
 			filter = bcZones
 		elseif zoneFilter == "WRATH" then
 			filter = wrathZones
-		elseif zoneFilter == "CATACLYSM" then
-			fiter = cataZones
 		end
 	elseif zoneFilter then
 		filter = bcZones
 	end
-	if dbs["Mines"]    then self:MergeMines(style ~= "Merge",filter) end
-	if dbs["Herbs"]    then self:MergeHerbs(style ~= "Merge",filter) end
-	if dbs["Gases"]    then self:MergeGases(style ~= "Merge",filter) end
-	if dbs["Fish"]     then self:MergeFish(style ~= "Merge",filter) end
-	if dbs["Treasure"] then self:MergeTreasure(style ~= "Merge",filter) end
-	if dbs["Archaeology"] then self:MergeArchaelogy(style ~= "Merge",filter) end
+	if dbs["Mines"]    then self:MergeNodes(style ~= "Merge", filter, "Mining", GatherMateData2MineDB) end
+	if dbs["Herbs"]    then self:MergeNodes(style ~= "Merge", filter, "Herb Gathering", GatherMateData2HerbDB) end
+	if dbs["Gases"]    then self:MergeNodes(style ~= "Merge", filter, "Extract Gas", GatherMateData2GasDB) end
+	if dbs["Fish"]     then self:MergeNodes(style ~= "Merge", filter, "Fishing", GatherMateData2FishDB) end
+	if dbs["Treasure"] then self:MergeNodes(style ~= "Merge", filter, "Treasure", GatherMateData2TreasureDB) end
+	if dbs["Woodcutting"] then self:MergeNodes(style ~= "Merge", filter, "Woodcutting", GatherMateData2TreeDB) end
 	self:CleanupImportData()
 	GatherMate:SendMessage("GatherMateData2Import")
 	--GatherMate:CleanupDB()
 end
 -- Insert mining data
-function GatherMateData:MergeMines(clear,zoneFilter)
-	if clear then GatherMate:ClearDB("Mining") end
-	for zoneID, node_table in pairs(GatherMateData2MineDB) do
+function GatherMateData:MergeNodes(clear, zoneFilter, ntype, sourcevar)
+	if clear then GatherMate:ClearDB(ntype) end
+	for zoneID, node_table in pairs(sourcevar) do
 		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
-			for coord, nodeID in pairs(node_table) do
-				GatherMate:InjectNode(zoneID,coord,"Mining", nodeID)
-			end
-		end
-	end
-end
-
--- herbs
-function GatherMateData:MergeHerbs(clear,zoneFilter)
-	if clear then GatherMate:ClearDB("Herb Gathering") end
-	for zoneID, node_table in pairs(GatherMateData2HerbDB) do
-		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
-			for coord, nodeID in pairs(node_table) do
-				GatherMate:InjectNode(zoneID,coord,"Herb Gathering", nodeID)
-			end
-		end
-	end
-end
-
--- gases
-function GatherMateData:MergeGases(clear,zoneFilter)
-	if clear then GatherMate:ClearDB("Extract Gas") end
-	for zoneID, node_table in pairs(GatherMateData2GasDB) do
-		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
-			for coord, nodeID in pairs(node_table) do
-				GatherMate:InjectNode(zoneID,coord,"Extract Gas", nodeID)
-			end
-		end
-	end
-end
-
--- fish
-function GatherMateData:MergeFish(clear,zoneFilter)
-	if clear then GatherMate:ClearDB("Fishing") end
-	for zoneID, node_table in pairs(GatherMateData2FishDB) do
-		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
-			for coord, nodeID in pairs(node_table) do
-				GatherMate:InjectNode(zoneID,coord,"Fishing", nodeID)
-			end
-		end
-	end
-end
-function GatherMateData:MergeTreasure(clear,zoneFilter)
-	if clear then GatherMate:ClearDB("Treasure") end
-	for zoneID, node_table in pairs(GatherMateData2TreasureDB) do
-		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
-			for coord, nodeID in pairs(node_table) do
-				GatherMate:InjectNode(zoneID,coord,"Treasure", nodeID)
-			end
-		end
-	end
-end
-function GatherMateData:MergeArchaelogy(clear,zoneFilter)
-	if clear then GatherMate:ClearDB("Archaeology") end
-	for zoneID, node_table in pairs(GatherMateData2ArchaeologyDB) do
-		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
-			for coord, nodeID in pairs(node_table) do
-				GatherMate:InjectNode(zoneID,coord,"Archaeology", nodeID)
+			for nodeID, nodes in pairs(node_table) do
+				for _, coord in ipairs(nodes) do
+					GatherMate:InjectNode(zoneID, coord, ntype, nodeID)
+				end
 			end
 		end
 	end
@@ -149,5 +78,5 @@ function GatherMateData:CleanupImportData()
 	GatherMateData2GasDB = nil
 	GatherMateData2FishDB = nil
 	GatherMateData2TreasureDB = nil
-	GatherMateData2ArchaeologyDB = nil
+	GatherMateData2TreeDB = nil
 end
