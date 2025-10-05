@@ -122,7 +122,7 @@ local node_ids = {
 		[NL["Earthroot"]] 						= 403,
 		[NL["Mageroyal"]] 						= 404,
 		[NL["Briarthorn"]] 						= 405,
-		--[NL["Swiftthistle"]] 					= 406, -- found it briathorn nodes
+		--[NL["Swiftthistle"]] 					= 406, -- found in briathorn nodes
 		[NL["Stranglekelp"]] 					= 407,
 		[NL["Bruiseweed"]] 						= 408,
 		[NL["Wild Steelbloom"]] 				= 409,
@@ -214,18 +214,29 @@ local node_ids = {
 		[NL["Everfrost Chip"]]					= 532,
 		[NL["Brightly Colored Egg"]]			= 533,
 	},
-	["Archaeology"] = {
-		-- cata archeolgy objects
-		[NL["Night Elf Archaeology Find"]]      = 601,
-		[NL["Troll Archaeology Find"]]          = 602,
-		[NL["Dwarf Archaeology Find"]]          = 603,
-		[NL["Fossil Archaeology Find"]]         = 604,
-		[NL["Draenei Archaeology Find"]]        = 605,
-		[NL["Orc Archaeology Find"]]            = 606,
-		[NL["Nerubian Archaeology Find"]]       = 607,
-		[NL["Vrykul Archaeology Find"]]         = 608,
-		[NL["Tol'vir Archaeology Find"]]        = 609,
-		[NL["Other Archaeology Find"]]          = 610,
+	["Woodcutting"] = {
+		[NL["Ashenvale Tree"]]					= 601,
+		[NL["Azshara Tree"]]					= 602,
+		[NL["Darkshore Tree"]]					= 603,
+		[NL["Dun Morogh Tree"]]					= 604,
+		[NL["Durotar Tree"]]					= 605,
+		[NL["Duskwood Tree"]]					= 606,
+		[NL["Elwynn Tree"]]						= 607,
+		[NL["Felwood Tree"]]					= 608,
+		[NL["Hillsbrad Tree"]]					= 609,
+		[NL["Hinterland Tree"]]					= 610,
+		[NL["Loch Modan Tree"]]					= 611,
+		[NL["Mulgore Tree"]]					= 612,
+		[NL["Plagueland Stump"]]				= 613,
+		[NL["Plagueland Tree"]]					= 614,
+		[NL["Redridge Tree"]]					= 615,
+		[NL["Silverpine Tree"]]					= 616,
+		[NL["Stonetalon Tree"]]					= 617,
+		[NL["Swamp Stump"]]						= 618,
+		[NL["Teldrassil Tree"]]					= 619,
+		[NL["Tirisfal Tree"]]					= 620,
+		[NL["Westfall Tree"]]					= 621,
+		[NL["Winterspring Tree"]]				= 622,
 	}
 }
 GatherMate.nodeIDs = node_ids
@@ -297,7 +308,7 @@ Display:SetSkillProfession("Herb Gathering", L["Herbalism"])
 Display:SetSkillProfession("Mining", L["Mining"])
 Display:SetSkillProfession("Fishing", L["Fishing"])
 Display:SetSkillProfession("Extract Gas", L["Engineering"])
-Display:SetSkillProfession("Archaeology", L["Archaeology"])
+Display:SetSkillProfession("Woodcutting", L["Woodcutting"])
 
 --[[
 	Textures for display
@@ -501,17 +512,29 @@ local node_textures = {
 		[532] = icon_path.."Treasure\\everfrost.tga",
 		[533] = icon_path.."Treasure\\egg.tga",
 	},
-	["Archaeology"] = {
-		[601] = icon_path.."Archaeology\\shovel.tga",
-		[602] = icon_path.."Archaeology\\shovel.tga",
-		[603] = icon_path.."Archaeology\\shovel.tga",
-		[604] = icon_path.."Archaeology\\shovel.tga",
-		[605] = icon_path.."Archaeology\\shovel.tga",
-		[606] = icon_path.."Archaeology\\shovel.tga",
-		[607] = icon_path.."Archaeology\\shovel.tga",
-		[608] = icon_path.."Archaeology\\shovel.tga",
-		[609] = icon_path.."Archaeology\\shovel.tga",
-		[610] = icon_path.."Archaeology\\shovel.tga",
+	["Woodcutting"] = {
+		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
+		[602] = icon_path.."Tree\\HardWoodLog", -- Azshara Tree
+		[603] = icon_path.."Tree\\GreenWoodLog", -- Darkshore Tree
+		[604] = icon_path.."Tree\\GreenWoodLog", -- Dun Morogh Tree
+		[605] = icon_path.."Tree\\GreenWoodLog", -- Durotar Palm
+		[606] = icon_path.."Tree\\SoftWoodLog", -- Duskwood Tree
+		[607] = icon_path.."Tree\\GreenWoodLog", -- Elwynn Tree
+		[608] = icon_path.."Tree\\HardWoodLog", -- Felwood Tree
+		[609] = icon_path.."Tree\\SoftWoodLog", -- Hillsbrad Tree
+		[610] = icon_path.."Tree\\HardWoodLog", -- Hinterland Tree
+		[611] = icon_path.."Tree\\SoftWoodLog", -- Loch Modan Tree
+		[612] = icon_path.."Tree\\GreenWoodLog", -- Mulgore Tree
+		[613] = icon_path.."Tree\\HardWoodLog", -- Plagueland Stump
+		[614] = icon_path.."Tree\\HardWoodLog", -- Plagueland Tree
+		[615] = icon_path.."Tree\\SoftWoodLog", -- Redridge Tree
+		[616] = icon_path.."Tree\\SoftWoodLog", -- Silverpine Tree
+		[617] = icon_path.."Tree\\SoftWoodLog", -- Stonetalon Tree
+		[618] = icon_path.."Tree\\SeasonedWoodLog", -- Swamp Stump
+		[619] = icon_path.."Tree\\GreenWoodLog", -- Teldrassil Tree
+		[620] = icon_path.."Tree\\GreenWoodLog", -- Tirisfal Tree
+		[621] = icon_path.."Tree\\SoftWoodLog", -- Westfall Tree
+		[622] = icon_path.."Tree\\ElderWoodLog", -- Winterspring Tree
 	},
 }
 GatherMate.nodeTextures = node_textures
@@ -635,7 +658,29 @@ local node_minharvest = {
 	},
 	["Treasure"] = {
 	},
-	["Archaeology"] = {
+	["Woodcutting"] = {
+		[601] = 100,
+		[602] = 225,
+		[603] = 50,
+		[604] = 1,
+		[605] = 1,
+		[606] = 75,
+		[607] = 1,
+		[608] = 225,
+		[609] = 75,
+		[610] = 150,
+		[611] = 50,
+		[612] = 1,
+		[613] = 200,
+		[614] = 225,
+		[615] = 75,
+		[616] = 50,
+		[617] = 100,
+		[618] = 175,
+		[619] = 1,
+		[620] = 1,
+		[621] = 50,
+		[622] = 275,
 	},
 }
 GatherMate.nodeMinHarvest = node_minharvest

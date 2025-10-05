@@ -47,11 +47,6 @@ local prof_options3 = {
 	["active"]          = L["Only while tracking"],
 	["never"]           = L["Never show"],
 }
-local prof_options4 = { -- For Archaeology, which doesn't have tracking as a skill
-	["always"]           = L["Always show"],
-	["with_profession"]  = L["Only with profession"],
-	["never"]            = L["Never show"],
-}
 
 local options = {}
 local db
@@ -129,13 +124,13 @@ options.args.display.args.general = {
 					values = prof_options3,
 					arg = "Treasure"
 				},
-				showArchaeology = {
+				showWoodcutting = {
 					order = 6,
-					name = L["Show Archaeology Nodes"],
-					desc = L["Toggle showing archaeology nodes."],
+					name = L["Show Woodcutting Nodes"],
+					desc = L["Toggle showing woodcutting nodes."],
 					type = "select",
-					values = prof_options4,
-					arg = "Archaeology"
+					values = prof_options,
+					arg = "Woodcutting"
 				}
 			},
 		},
@@ -291,13 +286,13 @@ options.args.display.args.general = {
 							hasAlpha = true,
 							arg = "Treasure",
 						},
-						trackingColorArchaelogy = {
+						trackingColorWoodcutting = {
 							order = 7,
-							name = L["Archaeology"],
+							name = L["Woodcutting"],
 							desc = L["Color of the tracking circle."],
 							type = "color",
 							hasAlpha = true,
-							arg = "Archaeology",
+							arg = "Woodcutting",
 						},
 						space = {
 							order = 7,
@@ -598,9 +593,9 @@ options.args.display.args.filters.args.treasure = {
 		},
 	},
 }
-options.args.display.args.filters.args.archaeology = {
+options.args.display.args.filters.args.woodcutting = {
 	type = "group",
-	name = L["Archaeology filter"],
+	name = L["Woodcutting filter"],
 	args = {
 		desc = commonFiltersDescTable,
 		select_all = {
@@ -609,7 +604,7 @@ options.args.display.args.filters.args.archaeology = {
 			desc = L["Select all nodes"],
 			type = "execute",
 			func = "SelectAll",
-			arg = "Archaeology",
+			arg = "Woodcutting",
 		},
 		select_none = {
 			order = 2,
@@ -617,17 +612,17 @@ options.args.display.args.filters.args.archaeology = {
 			desc = L["Clear node selections"],
 			type = "execute",
 			func = "SelectNone",
-			arg = "Archaeology",
+			arg = "Woodcutting",
 		},
 		gaslist = {
 			order = 3,
 			name = L["Treasure"],
-			desc = L["Select the archaeology nodes you wish to display."],
+			desc = L["Select the woodcutting nodes you wish to display."],
 			type = "multiselect",
-			values = sortedFilter["Archaeology"],
+			values = sortedFilter["Woodcutting"],
 			set = "SetState",
 			get = "GetState",
-			arg = "Archaeology",
+			arg = "Woodcutting",
 		},
 	},
 }
@@ -688,7 +683,7 @@ options.args.cleanup = {
 								["Herb Gathering"] = L["Herb Bushes"],
 								["Mining"] = L["Mineral Veins"],
 								["Extract Gas"] = L["Gas Clouds"],
-								["Archaeology"] = L["Archaeology"],
+								["Woodcutting"] = L["Woodcutting"],
 							},
 							get = function() return selectedDatabase end,
 							set = function(k, v)
@@ -793,12 +788,12 @@ options.args.cleanup = {
 							confirm = true,
 							confirmText = L["Are you sure you want to delete all nodes from this database?"],
 						},
-						Archaeology = {
+						Woodcutting = {
 							order = 5,
-							name = L["Archaeology"],
+							name = L["Woodcutting"],
 							desc = L["Delete Entire Database"],
 							type = "execute",
-							arg = "Archaeology",
+							arg = "Woodcutting",
 							confirm = true,
 							confirmText = L["Are you sure you want to delete all nodes from this database?"],
 						},
@@ -868,13 +863,13 @@ options.args.cleanup = {
 					min = 0, max = 30, step = 1,
 					arg = "Treasure",
 				},
-				Archaeology = {
+				Woodcutting = {
 					order = 5,
-					name = L["Archaeology"],
+					name = L["Woodcutting"],
 					desc = L["Cleanup radius"],
 					type = "range",
 					min = 0, max = 30, step = 1,
-					arg = "Treasure",
+					arg = "Woodcutting",
 				}
 			},
 		},
@@ -930,12 +925,12 @@ options.args.cleanup = {
 					type = "toggle",
 					arg = "Treasure",
 				},
-				Archaeology = {
+				Woodcutting = {
 					order = 5,
-					name = L["Archaeology"],
+					name = L["Woodcutting"],
 					desc = L["Database locking"],
 					type = "toggle",
-					arg = "Archaeology",
+					arg = "Woodcutting",
 				}
 			}
 		},
@@ -960,7 +955,7 @@ ImportHelper.db_tables = {
 	["Gases"] = L["Gas Clouds"],
 	["Fish"] = L["Fishing"],
 	["Treasure"] = L["Treasure"],
-	["Archaeology"] = L["Archaeology"],
+	["Woodcutting"] = L["Woodcutting"],
 }
 ImportHelper.expac_data = {
 	["TBC"] = L["The Burning Crusades"],
@@ -1070,7 +1065,7 @@ options.args.importing.args.GatherMateData = {
 				if db["importers"]["GatherMate2_Data"].Databases["Gases"] then cm = 1 end
 				if db["importers"]["GatherMate2_Data"].Databases["Fish"] then cm = 1 end
 				if db["importers"]["GatherMate2_Data"].Databases["Treasure"] then cm = 1 end
-				if db["importers"]["GatherMate2_Data"].Databases["Archaeology"] then cm = 1 end
+				if db["importers"]["GatherMate2_Data"].Databases["Woodcutting"] then cm = 1 end
 				return imported["GatherMate2_Data"] or (cm == 0 and not imported["GatherMate2_Data"])
 			end,
 		}

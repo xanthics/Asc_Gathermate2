@@ -19,7 +19,10 @@ local gasSpell = (GetSpellInfo(30427))
 local openSpell = (GetSpellInfo(3365))
 local openNoTextSpell = (GetSpellInfo(22810))
 local pickSpell = (GetSpellInfo(1804))
-local archSpell = (GetSpellInfo(73979)) -- Searching for Artifacts spell
+local woodSpell1 = (GetSpellInfo(93462)) -- Apprentice
+local woodSpell2 = (GetSpellInfo(93463)) -- Journeyman
+local woodSpell3 = (GetSpellInfo(93464)) -- Expert
+local woodSpell4 = (GetSpellInfo(93465)) -- Artisan
 
 local spells = { -- spellname to "database name"
 	[miningSpell] = "Mining",
@@ -29,7 +32,10 @@ local spells = { -- spellname to "database name"
 	[openSpell] = "Treasure",
 	[openNoTextSpell] = "Treasure",
 	[pickSpell] = "Treasure",
-	[archSpell] = "Archaeology",
+	[woodSpell1] = "Woodcutting",
+	[woodSpell2] = "Woodcutting",
+	[woodSpell3] = "Woodcutting",
+	[woodSpell4] = "Woodcutting",
 }
 local tooltipLeftText1 = _G["GameTooltipTextLeft1"]
 local strfind, stringmatch = string.find, string.match
@@ -137,7 +143,7 @@ function Collector:GatherCompleted()
 end
 
 --[[
-	When the hand icon goes to a gear see if we can find a nde under the gear ala for the fishing bobber OR herb of mine
+	When the hand icon goes to a gear see if we can find a node under the gear ala for the fishing bobber OR herb of mine
 ]]
 function Collector:CursorChange()
 	if foundTarget then return end
