@@ -57,7 +57,6 @@ options.name = "GatherMate2"
 options.get = function( k ) return db[k.arg] end
 options.set = function( k, v ) db[k.arg] = v; Config:UpdateConfig(); end
 options.args = {}
-options.plugins = {}
 
 -- Display Settings config tree
 options.args.display = {
@@ -963,7 +962,7 @@ ImportHelper.expac_data = {
 	["CATACLYSM"] = L["Cataclysm"],
 }
 imported["GatherMate2_Data"] = false
-options.args.importing.args.GatherMateData = {
+options.args.importing = {
 	type = "group",
 	name = "GatherMate2Data", -- addon name to import from, don't localize
 	handler = ImportHelper,
@@ -1092,25 +1091,33 @@ options.args.faq_group = {
 }
 
 
-
 --[[
 	Initialize the Config System
 ]]
 
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
+local AceConfig = LibStub("AceConfig-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+
 function Config:OnInitialize()
 	db = GatherMate.db.profile
-	options.plugins["profiles"] = { profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(GatherMate2.db) }
-	self.options = options
+	options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(GatherMate2.db)
 	self.importHelper = ImportHelper
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("GatherMate2", options)
-	LibStub("AceConfigDialog-3.0"):AddToBlizOptions("GatherMate2", "GatherMate2")
-	self:RegisterChatCommand("gathermate2", function() LibStub("AceConfigDialog-3.0"):Open("GatherMate2") end )
+	AceConfig:RegisterOptionsTable("GatherMate2", options)
+	self.optionsFrame = LibStub("LibAboutPanel").new(nil, "GatherMate2")
+	self.optionsFrame.Display = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Display"], "GatherMate2", "display")
+	self.optionsFrame.Database = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Database"], "GatherMate2", "cleanup")
+	self.optionsFrame.Import = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Import"], "GatherMate2", "importing")
+	self.optionsFrame.FAQ = AceConfigDialog:AddToBlizOptions("GatherMate2", L["FAQ"], "GatherMate2", "faq_group")
+	self.optionsFrame.Profiles = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Profiles"], "GatherMate2", "profiles")
+	--AceConfigDialog:AddToBlizOptions("GatherMate2", "GatherMate2")
+	self:RegisterChatCommand("gathermate", function() AceConfigDialog:Open("GatherMate2") end )
 	self:RegisterMessage("GatherMate2ConfigChanged")
 	if DataBroker then
 		local launcher = DataBroker:NewDataObject("GatherMate2", {
 		    type = "launcher",
 		    icon = "Interface\\AddOns\\GatherMate2\\Artwork\\Icon.tga",
-		    OnClick = function(clickedframe, button) LibStub("AceConfigDialog-3.0"):Open("GatherMate2") end,
+		    OnClick = function(clickedframe, button) AceConfigDialog:Open("GatherMate2") end,
 		})
 	end
 end

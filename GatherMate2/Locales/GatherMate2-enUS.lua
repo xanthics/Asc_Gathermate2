@@ -185,6 +185,10 @@ L["Tracking Distance"] = true
 L["Treasure"] = true
 L["Treasure filter"] = true
 L["Wrath of the Lich King"] = true
+L["Display"] = true
+L["Database"] = true
+L["Import"] = true
+L["Profiles"] = true
 
 
 local NL = LibStub("AceLocale-3.0"):NewLocale("GatherMate2Nodes", "enUS", true, debug)
