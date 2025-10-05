@@ -2,6 +2,8 @@ local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Display = GatherMate:NewModule("Display","AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2")
 
+local Astrolabe = DongleStub("Astrolabe-0.4")
+
 -- Current minimap pin set
 local minimapPins, minimapPinCount = {}, 0
 -- Current worldmap pin set
@@ -248,6 +250,7 @@ function Display:OnEnable()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateMaps")
 	self:RegisterEvent("SKILL_LINES_CHANGED")
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD","UpdateMaps")
 	self:SKILL_LINES_CHANGED()
 	self:MINIMAP_UPDATE_TRACKING()
 	self:UpdateVisibility()
@@ -549,7 +552,8 @@ function Display:addMiniPin(pin, refresh)
 	if db.nodeRange or alpha >= 1 then
 		pin:Show()
 		pin:ClearAllPoints()
-		pin:SetPoint("CENTER", Minimap, "CENTER", diffX * minimapWidth, -diffY * minimapHeight)
+		--pin:SetPoint("CENTER", Minimap, "CENTER", diffX * minimapWidth, -diffY * minimapHeight)
+		local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
 		pin:SetAlpha(min(alpha,db.alpha))
 	else
 		pin:Hide()
@@ -668,6 +672,9 @@ end
 ]]
 function Display:UpdateMiniMap(force)
 	if not db.showMinimap or not Minimap:IsVisible() then return end
+	if not WorldMapFrame:IsShown() then
+		SetMapToCurrentZone()
+	end
 
 	-- update our zone info
 	zone = GetCurrentMapAreaID()
@@ -685,7 +692,6 @@ function Display:UpdateMiniMap(force)
 		x, y = lastX, lastY
 		level = lastLevel
 	end
-
 	-- get data from the API for calculations
 	local zoom = Minimap:GetZoom()
 	local diffZoom = zoom ~= lastZoom
