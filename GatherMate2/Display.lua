@@ -34,7 +34,7 @@ local math_sin, math_cos, abs, max = math.sin, math.cos, math.abs, math.max
 local sin, cos
 -- API function cache
 local GetRealZoneText, GetPlayerMapPosition, GetCurrentMapAreaID = GetRealZoneText, GetPlayerMapPosition, GetCurrentMapAreaID
-local GetProfessionInfo, GetCurrentMapDungeonLevel = GetProfessionInfo, GetCurrentMapDungeonLevel
+local GetCurrentMapDungeonLevel = GetCurrentMapDungeonLevel
 local strfind, format = string.find, string.format
 local trackingCircle, nodeTextures
 local db
@@ -297,16 +297,30 @@ function Display:SKILL_LINES_CHANGED()
 		have_prof_skill[k] = nil
 	end
 
-	for index, key in pairs({GetProfessions()}) do
-		name, icon, rank, maxrank, numspells, spelloffset, skillline = GetProfessionInfo(key)
-		if profession_to_skill[name] then
-			have_prof_skill[profession_to_skill[name]] = true
+	local inProfessions = false
+	local inSecondary = false
+
+	for i = 1, GetNumSkillLines() do
+		local skillName, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
+		if  skillName == "Professions" then
+			inProfessions = true
+		elseif  skillName == "Secondary Skills" then
+			inProfessions = false
+			inSecondary = true
+		elseif  skillName == "Weapon Skills" then
+			inSecondary = false
+		elseif  inProfessions == true or inSecondary == true then
+			if skillName and profession_to_skill[skillName] then
+				have_prof_skill[profession_to_skill[skillName]] = true
+			end
 		end
 	end
+
 	self:UpdateVisibility()
 	self:UpdateMaps()
 end
 
+-- TODO: Ascension supports multiple tracking at once
 function Display:MINIMAP_UPDATE_TRACKING()
 	local count = GetNumTrackingTypes();
 	local info;
