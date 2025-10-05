@@ -959,7 +959,6 @@ ImportHelper.db_tables = {
 ImportHelper.expac_data = {
 	["TBC"] = L["The Burning Crusades"],
 	["WRATH"] = L["Wrath of the Lich King"],
-	["CATACLYSM"] = L["Cataclysm"],
 }
 imported["GatherMate2_Data"] = false
 options.args.importing = {

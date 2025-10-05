@@ -20,7 +20,6 @@ L["Auto Import"] = true
 L["Auto import complete for addon "] = true
 L["Automatically import when ever you update your data module, your current import choice will be used."] = true
 L["CLEANUP_RADIUS_DESC"] = "The radius in yards where duplicate nodes should be removed. The default is |cffffd20050|r yards for Extract Gas and |cffffd20015|r yards for everything else. These settings are also followed when adding nodes."
-L["Cataclysm"] = true
 L["Cleanup Complete."] = true
 L["Cleanup Database"] = true
 L["Cleanup radius"] = true

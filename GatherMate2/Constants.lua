@@ -99,13 +99,6 @@ local node_ids = {
 		[NL["Titanium Vein"]]					= 230,
 		[NL["Saronite Deposit"]]				= 231,
 		[NL["Rich Saronite Deposit"]]			= 232,
--- Cata nodes
-		[NL["Obsidium Deposit"]]				= 233,
-		[NL["Huge Obsidian Slab"]]				= 234,
-		[NL["Pure Saronite Deposit"]] 			= 235,
-		[NL["Elementium Vein"]]					= 236,
-		[NL["Rich Elementium Vein"]]			= 237,
-		[NL["Pyrite Deposit"]]					= 238,
 	},
 	["Extract Gas"] = {
 		[NL["Windy Cloud"]] 					= 301,
@@ -170,14 +163,6 @@ local node_ids = {
 		[NL["Firethorn"]]						= 451,
 		[NL["Frozen Herb"]]						= 452,
 		[NL["Frost Lotus"]]						= 453, -- found in lake wintergrasp only
--- cata nodes
-		[NL["Dragon's Teeth"]]					= 454,
-		[NL["Sorrowmoss"]]						= 455,
-		[NL["Azshara's Veil"]]					= 456,
-		[NL["Cinderbloom"]]						= 457,
-		[NL["Stormvine"]]						= 458,
-		[NL["Heartblossom"]]					= 459,
-		[NL["Twilight Jasmine"]]				= 460,
 	},
 	["Treasure"] = {
 		[NL["Giant Clam"]] 						= 501,
