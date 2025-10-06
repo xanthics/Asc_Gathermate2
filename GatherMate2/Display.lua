@@ -2,7 +2,7 @@ local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Display = GatherMate:NewModule("Display","AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2")
 
-local Astrolabe = DongleStub("Astrolabe-0.4")
+--local Astrolabe = DongleStub("Astrolabe-0.4")
 
 -- Current minimap pin set
 local minimapPins, minimapPinCount = {}, 0
@@ -552,8 +552,8 @@ function Display:addMiniPin(pin, refresh)
 	if db.nodeRange or alpha >= 1 then
 		pin:Show()
 		pin:ClearAllPoints()
-		--pin:SetPoint("CENTER", Minimap, "CENTER", diffX * minimapWidth, -diffY * minimapHeight)
-		local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
+		pin:SetPoint("CENTER", Minimap, "CENTER", diffX * minimapWidth, -diffY * minimapHeight)
+		--local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
 		pin:SetAlpha(min(alpha,db.alpha))
 	else
 		pin:Hide()
