@@ -46,7 +46,7 @@ local defaults = {
 			["Mining"]         = 15,
 			["Extract Gas"]    = 50,
 			["Treasure"]	   = 15,
-			["Woodcutting"]    = 10,
+			["Woodcutting"]    = 15,
 		},
 		dbLocks = {
 			["Herb Gathering"] = false,

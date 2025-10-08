@@ -867,7 +867,7 @@ options.args.cleanup = {
 					name = L["Woodcutting"],
 					desc = L["Cleanup radius"],
 					type = "range",
-					min = 0, max = 30, step = 1,
+					min = 0, max = 100, step = 1,
 					arg = "Woodcutting",
 				}
 			},

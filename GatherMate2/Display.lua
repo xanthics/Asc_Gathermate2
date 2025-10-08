@@ -2,7 +2,7 @@ local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
 local Display = GatherMate:NewModule("Display","AceEvent-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2")
 
---local Astrolabe = DongleStub("Astrolabe-0.4")
+local Astrolabe = DongleStub("Astrolabe-0.4")
 
 -- Current minimap pin set
 local minimapPins, minimapPinCount = {}, 0
@@ -425,7 +425,7 @@ end
 --[[
 	Add a pin to the world map
 ]]
-function Display:addWorldPin(coord, nodeID, nodeType, zone, index)
+function Display:addWorldPin(coord, nodeID, nodeType, zone, index, continent)
 	local pin = worldmapPins[index]
 	if not pin then
 		pin = self:getMapPin()
@@ -446,9 +446,7 @@ function Display:addWorldPin(coord, nodeID, nodeType, zone, index)
 		pin.texture:SetTexture(nodeTextures[nodeType][nodeID])
 		pin.texture:SetTexCoord(0, 1, 0, 1)
 		pin.texture:SetVertexColor(1, 1, 1, 1)
-		pin:Show()
-		pin:ClearAllPoints()
-		pin:SetPoint("CENTER", WorldMapButton, "TOPLEFT", x *worldmapWidth, -y * worldmapHeight)
+		Astrolabe:PlaceIconOnWorldMap(WorldMapButton, pin, continent, zone, x, y)
 		worldmapPins[index] = pin
 	end
 	return pin
@@ -485,11 +483,11 @@ function Display:getMiniPin(coord, nodeID, nodeType, zone, index)
 end
 
 function Display:addMiniPin(pin, refresh)
-	local xDist, yDist = pin.x1 - lastXY, pin.y1 - lastYY
-	-- calculate relative position and distance to the player
-	local dist_2 = xDist*xDist + yDist*yDist
+	if WorldMapFrame:IsVisible() == 1 then return end
+	local c1, z1, x1, y1 = Astrolabe:GetCurrentPlayerPosition()
+	local dist, xDist, yDist = Astrolabe:ComputeDistance( c1, z1, x1, y1, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
 	-- if distance <= db.trackDistance, convert to the circle texture
-	if (not pin.isCircle or refresh) and trackShow[pin.nodeType] and dist_2 <= db.trackDistance^2 then
+	if (not pin.isCircle or refresh) and trackShow[pin.nodeType] and dist <= db.trackDistance then
 		pin.texture:SetTexture(trackingCircle)
 		local t = db.trackColors[pin.nodeType]
 		pin.texture:SetVertexColor(t.Red, t.Green, t.Blue, t.Alpha)
@@ -498,7 +496,7 @@ function Display:addMiniPin(pin, refresh)
 		pin.isCircle = true
 		pin.texture:SetTexCoord(0, 1, 0, 1)
 	-- if distance > 100, set back to the node texture
-	elseif (pin.isCircle or refresh) and dist_2 > db.trackDistance^2 then
+	elseif (pin.isCircle or refresh) and dist > db.trackDistance then
 		pin:SetHeight(12 * db.scale / minimapScale)
 		pin:SetWidth(12 * db.scale / minimapScale)
 		pin.texture:SetTexture(nodeTextures[pin.nodeType][pin.nodeID])
@@ -507,54 +505,18 @@ function Display:addMiniPin(pin, refresh)
 		pin.isCircle = false
 	end
 
-	-- support for rotating minimap - transpose coordinates for the circular movement
-	if rotateMinimap then
-		local dx, dy = xDist, yDist
-		xDist = dx*cos - dy*sin
-		yDist = dx*sin + dy*cos
-	end
-
-	-- place pin on the map
-	local diffX, diffY, alpha = 0, 0, 1
-	-- adapt delta position to the map radius
-	diffX = xDist / mapRadius
-	diffY = yDist / mapRadius
-
-	-- different minimap shapes
-	local isRound = true
-	if ( minimapShape and not (xDist == 0 or yDist == 0) ) then
-		isRound = (xDist < 0) and 1 or 3
-		if ( yDist < 0 ) then
-			isRound = minimapShape[isRound]
-		else
-			isRound = minimapShape[isRound + 1]
-		end
-	end
-
-	-- calculate distance from the center of the map
-	local dist
-	if isRound then
-		dist = (diffX*diffX + diffY*diffY) / 0.9^2
-	else
-		dist = max(diffX*diffX, diffY*diffY) / 0.9^2
-	end
 	-- if distance > 1, then adapt node position to slide on the border, and set the node alpha accordingly
+	local alpha = 1
 	if dist > 1 then
-		dist = dist^0.5
-		diffX = diffX/dist
-		diffY = diffY/dist
-		alpha = 2 - dist
+		alpha = 1-(dist/500)
 		if alpha < 0 then
 			pin.keep = nil
 		end
 	end
 	-- finally show and SetPoint the pin
 	if db.nodeRange or alpha >= 1 then
-		pin:Show()
-		pin:ClearAllPoints()
-		pin:SetPoint("CENTER", Minimap, "CENTER", diffX * minimapWidth, -diffY * minimapHeight)
-		--local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
-		pin:SetAlpha(min(alpha,db.alpha))
+		local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
+		pin:SetAlpha(min(alpha+0.5,db.alpha))
 	else
 		pin:Hide()
 	end
@@ -642,21 +604,11 @@ function Display:UpdateIconPositions()
 
 	-- if the player moved, or changed the facing (rotating map) - update nodes
 	if x ~= lastX or y ~= lastY or facing ~= lastFacing or level ~= lastLevel or refresh then
-		-- update radius of the map
-		mapRadius = self.minimapSize[indoors][zoom] / 2
 
-		-- we calculate the distance to the node in yards
-		local _x, _y =  GatherMate:PointToYards(x, y, zone, level)
 		-- update upvalues for icon placement
 		lastX, lastY = x, y
-		lastXY, lastYY = _x, _y
 		lastLevel = level
 		lastFacing = facing
-
-		if rotateMinimap then
-			sin = math_sin(facing)
-			cos = math_cos(facing)
-		end
 
 		-- iterate all nodes and check if they are still in range of our minimap display, or even still existing
 		for k,v in pairs(minimapPins) do
@@ -775,6 +727,7 @@ function Display:UpdateWorldMap(force)
 
 	local zoneid = GetCurrentMapAreaID()
 	local mapLevel = GetCurrentMapDungeonLevel()
+	local mapContinent = GetCurrentMapContinent()
 	if not zoneid or zoneid == -1 then clearpins(worldmapPins) return end -- player is not viewing a zone map of a continent
 	if not rememberForce and (lastDrawnWorldMap == zoneid and mapLevel == lastLevel) then return end -- already drawn last time, and not forced
 	if lastDrawnWorldMap ~= zoneid or mapLevel ~= lastLevel then
@@ -790,7 +743,7 @@ function Display:UpdateWorldMap(force)
 			for coord, nodeID in GatherMate:GetNodesForZone(zoneid, db_type) do
 				local nx,ny,nlevel = GatherMate.mapData:DecodeLoc(coord)
 				if nlevel == mapLevel then
-					self:addWorldPin(coord, nodeID, db_type, zoneid, (i * 1e14) + coord).keep = true
+					self:addWorldPin(coord, nodeID, db_type, zoneid, (i * 1e14) + coord, mapContinent).keep = true
 				end
 			end
 		end
