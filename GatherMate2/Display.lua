@@ -673,7 +673,6 @@ function Display:UpdateMiniMap(force)
 		minimapHeight = Minimap:GetHeight() / 2
 		minimapStrata = Minimap:GetFrameStrata()
 		minimapFrameLevel = Minimap:GetFrameLevel() + 5
-		print(mapRadius)
 
 		-- calculate distance in yards
 		local _x, _y =  GatherMate:PointToYards(x, y, zone, level)
