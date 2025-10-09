@@ -17,6 +17,7 @@
 ## X-Curse-Project-ID: gathermate2_data
 ## X-Curse-Repository-ID: wow/gathermate2_data/mainline
 
+WorldforgeData.lua
 MiningData.lua
 HerbalismData.lua
 GasData.lua

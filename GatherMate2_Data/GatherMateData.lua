@@ -53,11 +53,13 @@ function GatherMateData:PerformMerge(dbs,style, zoneFilter)
 	if dbs["Fish"]     then self:MergeNodes(style ~= "Merge", filter, "Fishing", GatherMateData2FishDB) end
 	if dbs["Treasure"] then self:MergeNodes(style ~= "Merge", filter, "Treasure", GatherMateData2TreasureDB) end
 	if dbs["Woodcutting"] then self:MergeNodes(style ~= "Merge", filter, "Woodcutting", GatherMateData2TreeDB) end
+	if dbs["Worldforged"] then self:MergeNodes(style ~= "Merge", filter, "Treasure", GatherMateData2WFDB) end -- put worldforged items in the treasure table
 	self:CleanupImportData()
 	GatherMate:SendMessage("GatherMateData2Import")
 	--GatherMate:CleanupDB()
 end
--- Insert mining data
+
+-- Insert data
 function GatherMateData:MergeNodes(clear, zoneFilter, ntype, sourcevar)
 	if clear then GatherMate:ClearDB(ntype) end
 	for zoneID, node_table in pairs(sourcevar) do
@@ -79,4 +81,5 @@ function GatherMateData:CleanupImportData()
 	GatherMateData2FishDB = nil
 	GatherMateData2TreasureDB = nil
 	GatherMateData2TreeDB = nil
+	GatherMateData2WFDB = nil
 end

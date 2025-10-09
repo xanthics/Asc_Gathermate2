@@ -683,6 +683,7 @@ options.args.cleanup = {
 								["Mining"] = L["Mineral Veins"],
 								["Extract Gas"] = L["Gas Clouds"],
 								["Woodcutting"] = L["Woodcutting"],
+								["Worldforged"] = L["Worldforge Items"],
 							},
 							get = function() return selectedDatabase end,
 							set = function(k, v)
@@ -955,6 +956,7 @@ ImportHelper.db_tables = {
 	["Fish"] = L["Fishing"],
 	["Treasure"] = L["Treasure"],
 	["Woodcutting"] = L["Woodcutting"],
+	["Worldforged"] = L["Worldforge Items"],
 }
 ImportHelper.expac_data = {
 	["TBC"] = L["The Burning Crusades"],
@@ -1064,6 +1066,7 @@ options.args.importing = {
 				if db["importers"]["GatherMate2_Data"].Databases["Fish"] then cm = 1 end
 				if db["importers"]["GatherMate2_Data"].Databases["Treasure"] then cm = 1 end
 				if db["importers"]["GatherMate2_Data"].Databases["Woodcutting"] then cm = 1 end
+				if db["importers"]["GatherMate2_Data"].Databases["Worldforged"] then cm = 1 end
 				return imported["GatherMate2_Data"] or (cm == 0 and not imported["GatherMate2_Data"])
 			end,
 		}
