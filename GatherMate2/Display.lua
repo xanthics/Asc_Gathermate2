@@ -483,9 +483,10 @@ function Display:getMiniPin(coord, nodeID, nodeType, zone, index)
 end
 
 function Display:addMiniPin(pin, refresh)
-	if WorldMapFrame:IsVisible() == 1 then return end
+	if WorldMapFrame:IsVisible() == 1 or GetCurrentMapAreaID() == 0 then clearpins(minimapPins) Astrolabe:RemoveAllMinimapIcons() return end
 	local c1, z1, x1, y1 = Astrolabe:GetCurrentPlayerPosition()
 	local dist, xDist, yDist = Astrolabe:ComputeDistance( c1, z1, x1, y1, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
+
 	-- if distance <= db.trackDistance, convert to the circle texture
 	if (not pin.isCircle or refresh) and trackShow[pin.nodeType] and dist <= db.trackDistance then
 		pin.texture:SetTexture(trackingCircle)
