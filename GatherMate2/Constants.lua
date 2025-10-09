@@ -671,28 +671,7 @@ local node_minharvest = {
 	},
 }
 GatherMate.nodeMinHarvest = node_minharvest
---[[
-	Minimap scale settings for zoom
-]]
-local minimap_size = {
-	indoor = {
-		[0] = 300, -- scale
-		[1] = 240, -- 1.25
-		[2] = 180, -- 5/3
-		[3] = 120, -- 2.5
-		[4] = 80,  -- 3.75
-		[5] = 50,  -- 6
-	},
-	outdoor = {
-		[0] = 466 + 2/3, -- scale
-		[1] = 400,       -- 7/6
-		[2] = 333 + 1/3, -- 1.4
-		[3] = 266 + 2/6, -- 1.75
-		[4] = 200,       -- 7/3
-		[5] = 133 + 1/3, -- 3.5
-	},
-}
-Display.minimapSize = minimap_size
+
 --[[
 	Minimap shapes lookup table to determine round of not
 	borrowed from strolobe for faster lookups

@@ -26,8 +26,6 @@ local tinsert, tremove, next, pairs = tinsert, tremove, next, pairs
 local rotateMinimap = GetCVar("rotateMinimap") == "1"
 -- shape of the minimap
 local minimapShape
--- is the minimap indoors or outdoors
-local indoors = GetCVar("minimapZoom")+0 == Minimap:GetZoom() and "outdoor" or "indoor"
 -- diameter of the minimap
 local mapRadius, worldmapWidth, worldmapHeight, minimapWidth, minimapHeight, minimapScale, lastFacing, lastZoom
 local minimapStrata, worldmapStrata, minimapFrameLevel, worldmapFrameLevel
@@ -536,7 +534,6 @@ function Display:MinimapZoom()
 	if GetCVar("minimapZoom") == GetCVar("minimapInsideZoom") then
 		Minimap:SetZoom(zoom < 2 and zoom + 1 or zoom - 1)
 	end
-	indoors = GetCVar("minimapZoom")+0 == Minimap:GetZoom() and "outdoor" or "indoor"
 	Minimap:SetZoom(zoom)
 	self:UpdateMiniMap()
 end
@@ -671,11 +668,12 @@ function Display:UpdateMiniMap(force)
 	if x ~= lastX or y ~= lastY or diffZoom or facing ~= lastFacing or level ~= lastLevel or force then
 		-- set upvalues to new settings
 		minimapShape = GetMinimapShape and self.minimapShapes[GetMinimapShape() or "ROUND"]
-		mapRadius = self.minimapSize[indoors][zoom] / 2
+		mapRadius = 250 -- self.minimapSize[indoors][zoom] / 2
 		minimapWidth = Minimap:GetWidth() / 2
 		minimapHeight = Minimap:GetHeight() / 2
 		minimapStrata = Minimap:GetFrameStrata()
 		minimapFrameLevel = Minimap:GetFrameLevel() + 5
+		print(mapRadius)
 
 		-- calculate distance in yards
 		local _x, _y =  GatherMate:PointToYards(x, y, zone, level)
