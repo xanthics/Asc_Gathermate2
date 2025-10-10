@@ -121,6 +121,7 @@ L["Import Options"] = true
 L["Import Style"] = true
 L["Importing_Desc"] = "Importing allows GatherMate to get node data from other sources apart from what you find yourself in the game world. After importing data, you may need to perform a database cleanup."
 L["Keybind to toggle Minimap Icons"] = true
+L["Keybind to toggle Worldmap Icons"] = true
 L["Load GatherMate2Data and import the data to your database."] = true
 L["Load GatherMateData and import the data to your database."] = true
 L["Merge"] = true

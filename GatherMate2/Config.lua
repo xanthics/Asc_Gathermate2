@@ -13,7 +13,7 @@ local DataBroker = LibStub:GetLibrary("LibDataBroker-1.1",true)
 -- Setup keybinds (these need to be global strings to show up properly in ESC -> Key Bindings)
 BINDING_HEADER_GatherMate = "GatherMate2"
 BINDING_NAME_TOGGLE_GATHERMATE2_MINIMAPICONS = L["Keybind to toggle Minimap Icons"]
-
+BINDING_NAME_TOGGLE_GATHERMATE2_WORLDMAPICONS = L["Keybind to toggle Worldmap Icons"]
 -- A helper function for keybindings
 local KeybindHelper = {}
 do
@@ -196,14 +196,44 @@ options.args.display.args.general = {
 						SaveBindings(GetCurrentBindingSet())
 					end,
 				},
-				space = {
+				togglekeyWorld = {
 					order = 5,
+					name = L["Keybind to toggle Worldmap Icons"],
+					desc = L["Keybind to toggle Worldmap Icons"],
+					type = "keybinding",
+					width = "double",
+					get = function(info)
+						return table.concat(KeybindHelper:MakeKeyBindingTable(GetBindingKey("TOGGLE_GATHERMATE2_WORLDMAPICONS")), ", ")
+					end,
+					set = function(info, key)
+						if key == "" then
+							local t = KeybindHelper:MakeKeyBindingTable(GetBindingKey("TOGGLE_GATHERMATE2_WORLDMAPICONS"))
+							for i = 1, #t do
+								SetBinding(t[i])
+							end
+						else
+							local oldAction = GetBindingAction(key)
+							local frame = LibStub("AceConfigDialog-3.0").OpenFrames["GatherMate"]
+							if frame then
+								if ( oldAction ~= "" and oldAction ~= "TOGGLE_GATHERMATE2_WORLDMAPICONS" ) then
+									frame:SetStatusText(KEY_UNBOUND_ERROR:format(GetBindingText(oldAction, "BINDING_NAME_")))
+								else
+									frame:SetStatusText(KEY_BOUND)
+								end
+							end
+							SetBinding(key, "TOGGLE_GATHERMATE2_WORLDMAPICONS")
+						end
+						SaveBindings(GetCurrentBindingSet())
+					end,
+				},
+				space = {
+					order = 6,
 					name = "",
 					desc = "",
 					type = "description",
 				},
 				iconScale = {
-					order = 6,
+					order = 7,
 					name = L["Icon Scale"],
 					desc = L["Icon scaling, this lets you enlarge or shrink your icons on both the World Map and Minimap."],
 					type = "range",
@@ -211,7 +241,7 @@ options.args.display.args.general = {
 					arg = "scale",
 				},
 				iconAlpha = {
-					order = 7,
+					order = 8,
 					name = L["Icon Alpha"],
 					desc = L["Icon alpha value, this lets you change the transparency of the icons. Only applies on World Map."],
 					type = "range",
@@ -219,7 +249,7 @@ options.args.display.args.general = {
 					arg = "alpha",
 				},
 				minimapNodeRange = {
-					order = 8,
+					order = 9,
 					type = "toggle",
 					name = L["Show Nodes on Minimap Border"],
 					width = "double",
@@ -227,7 +257,7 @@ options.args.display.args.general = {
 					arg = "nodeRange",
 				},
 				tracking = {
-					order = 9,
+					order = 10,
 					name = L["Tracking Circle Color"],
 					desc = L["Color of the tracking circle."],
 					type = "group",
