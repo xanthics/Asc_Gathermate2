@@ -242,7 +242,7 @@ function Display:OnEnable()
 			end
 		end)
 	end
-	SetMapToCurrentZone()
+	if not WorldMapFrame:IsShown() then SetMapToCurrentZone() end
 	self:RegisterMapEvents()
 	self:RegisterEvent("WORLD_MAP_UPDATE", "UpdateWorldMap")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateMaps")
@@ -481,7 +481,7 @@ function Display:getMiniPin(coord, nodeID, nodeType, zone, index)
 end
 
 function Display:addMiniPin(pin, refresh)
-	if WorldMapFrame:IsVisible() == 1 or GetCurrentMapAreaID() == 0 then clearpins(minimapPins) Astrolabe:RemoveAllMinimapIcons() return end
+	if WorldMapFrame:IsShown() or GetCurrentMapAreaID() == 0 then clearpins(minimapPins) Astrolabe:RemoveAllMinimapIcons() return end
 	local c1, z1, x1, y1 = Astrolabe:GetCurrentPlayerPosition()
 	local dist, xDist, yDist = Astrolabe:ComputeDistance( c1, z1, x1, y1, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
 
@@ -549,9 +549,7 @@ end
 
 function Display:UpdateMaps()
 	clearpins(minimapPins)
-	if not WorldMapFrame:IsShown() then
-		SetMapToCurrentZone()
-	end
+	if not WorldMapFrame:IsShown() then SetMapToCurrentZone() end
 	self:UpdateMiniMap(true)
 	self:UpdateWorldMap(true)
 end
@@ -622,9 +620,7 @@ end
 ]]
 function Display:UpdateMiniMap(force)
 	if not db.showMinimap or not Minimap:IsVisible() then return end
-	if not WorldMapFrame:IsShown() then
-		SetMapToCurrentZone()
-	end
+	if not WorldMapFrame:IsShown() then SetMapToCurrentZone() end
 
 	-- update our zone info
 	zone = GetCurrentMapAreaID()
