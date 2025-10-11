@@ -483,6 +483,7 @@ end
 function Display:addMiniPin(pin, refresh)
 	if WorldMapFrame:IsShown() or GetCurrentMapAreaID() == 0 then clearpins(minimapPins) Astrolabe:RemoveAllMinimapIcons() return end
 	local c1, z1, x1, y1 = Astrolabe:GetCurrentPlayerPosition()
+	if c1 == -1 then return end -- We are not in an overworld map, abort
 	local dist, xDist, yDist = Astrolabe:ComputeDistance( c1, z1, x1, y1, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
 
 	-- if distance <= db.trackDistance, convert to the circle texture
