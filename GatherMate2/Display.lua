@@ -664,7 +664,7 @@ function Display:UpdateMiniMap(force)
 	if x ~= lastX or y ~= lastY or diffZoom or facing ~= lastFacing or level ~= lastLevel or force then
 		-- set upvalues to new settings
 		minimapShape = GetMinimapShape and self.minimapShapes[GetMinimapShape() or "ROUND"]
-		mapRadius = 250 -- self.minimapSize[indoors][zoom] / 2
+		mapRadius = Minimap:GetViewRadius() -- self.minimapSize[indoors][zoom] / 2
 		minimapWidth = Minimap:GetWidth() / 2
 		minimapHeight = Minimap:GetHeight() / 2
 		minimapStrata = Minimap:GetFrameStrata()
