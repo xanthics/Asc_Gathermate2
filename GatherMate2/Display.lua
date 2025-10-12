@@ -507,8 +507,8 @@ function Display:addMiniPin(pin, refresh)
 
 	-- if distance > 1, then adapt node position to slide on the border, and set the node alpha accordingly
 	local alpha = 1
-	if dist > 1 then
-		alpha = 1-(dist/500)
+	if dist > Minimap:GetViewRadius() then
+		alpha = 1-(dist/(Minimap:GetViewRadius()*1.5))
 		if alpha < 0 then
 			pin.keep = nil
 		end
