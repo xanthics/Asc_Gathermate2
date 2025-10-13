@@ -231,7 +231,6 @@ function Display:OnEnable()
 	if not self.updateFrame then
 		GatherMate.Visible = {}
 		WorldMapFrame:HookScript("OnHide", function() SetMapToCurrentZone() end)
-		WorldMapFrame:HookScript("OnShow", function() Display:CreateWorldMapCheckbox() end)
 		self.updateFrame = CreateFrame("Frame")
 		self.updateFrame:SetScript("OnUpdate", function(frame, elapsed)
 			last_update = last_update + elapsed
@@ -245,6 +244,7 @@ function Display:OnEnable()
 		end)
 	end
 	if not WorldMapFrame:IsShown() then SetMapToCurrentZone() end
+	self:CreateWorldMapCheckbox()
 	self:RegisterMapEvents()
 	self:RegisterEvent("WORLD_MAP_UPDATE", "UpdateWorldMap")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateMaps")
