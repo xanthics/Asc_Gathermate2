@@ -5,10 +5,10 @@
 ## Title: GatherMate2Data
 ## Title-zhTW: GatherMate2Data 採集助手資料庫
 ## Title-zhCN: GatherMate2Data 采集助手数据库
-## Author: kagaro, Xinhuan
+## Author: kagaro, Xinhuan, Ascension Compat by Xan
 ## X-Category: Map
 ## X-Email: sal.scotto@gmail.com
-## Version: 1.0
+## Version: 1.0.1
 ## LoadOnDemand: 1
 ## X-Generated-Version: $Revision: 6 $
 ## Dependencies: GatherMate2

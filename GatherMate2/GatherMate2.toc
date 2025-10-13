@@ -8,12 +8,12 @@
 ## Title: GatherMate2
 ## Title-zhTW: GatherMate2 採集助手
 ## Title-zhCN: GatherMate2 采集助手
-## Author: kagaro, xinhuan, nevcairiel
+## Author: kagaro, xinhuan, nevcairiel, Ascension Compat by Xan
 ## X-Email: sal.scotto@gmail.com
 ## X-Credits: OttoDeFe for the launher icon.
 ## SavedVariables: GatherMate2DB, GatherMate2HerbDB, GatherMate2MineDB, GatherMate2FishDB, GatherMate2GasDB, GatherMate2TreasureDB, GatherMate2TreeDB
 ## X-Category: Map
-## Version: 1.0.3
+## Version: 1.0.4
 ## X-License: ARR
 ## OptionalDeps: Ace3, LibDataBroker-1.1, LibMapData-1.0
 
