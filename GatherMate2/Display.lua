@@ -44,6 +44,7 @@ local inInstance
 local nodeRange = 2
 local forceNextUpdate
 local trackShow = {}
+local worldmapCheckbox
 
 local profession_to_skill = {}
 local have_prof_skill = {}
@@ -230,6 +231,7 @@ function Display:OnEnable()
 	if not self.updateFrame then
 		GatherMate.Visible = {}
 		WorldMapFrame:HookScript("OnHide", function() SetMapToCurrentZone() end)
+		WorldMapFrame:HookScript("OnShow", function() Display:CreateWorldMapCheckbox() end)
 		self.updateFrame = CreateFrame("Frame")
 		self.updateFrame:SetScript("OnUpdate", function(frame, elapsed)
 			last_update = last_update + elapsed
@@ -389,8 +391,33 @@ function Display:ConfigChanged()
 	db = GatherMate.db.profile
 	self:UpdateVisibility()
 	self:UpdateMaps()
+	if worldmapCheckbox then if worldmapCheckbox:GetValue() ~= db.showWorldMap then worldmapCheckbox:SetValue(db.showWorldMap) end end
 	-- TODO filter prefs
 end
+
+function Display:CreateWorldMapCheckbox()
+	if worldmapCheckbox then return end
+
+	local checkbox = LibStub("AceGUI-3.0"):Create("CheckBox")
+	checkbox:SetLabel("Show Nodes")
+	checkbox:SetWidth(90)
+	checkbox:SetValue(db.showWorldMap)
+	checkbox:SetCallback("OnValueChanged", function(widget, event, value)
+		db.showWorldMap = value
+		Display:UpdateWorldMap(true)
+	end)
+
+	local frame = checkbox.frame
+	local anchorTarget = _G["WorldMapQuestShowObjectives"]
+	frame:SetParent(anchorTarget)
+	frame:ClearAllPoints()
+	frame:SetPoint("RIGHT", anchorTarget, "LEFT", -8, 0)
+	frame:SetFrameLevel((anchorTarget.GetFrameLevel and anchorTarget:GetFrameLevel() or 0) + 10)
+	frame:Show()
+
+	worldmapCheckbox = checkbox
+end
+
 --[[
 	Get a Map pin
 ]]
