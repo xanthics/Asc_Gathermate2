@@ -1200,4 +1200,5 @@ end
 -- Allows an external module to insert their aceopttable
 function Config:RegisterModule(moduleName, optionsTable)
 	options.args[moduleName] = optionsTable
+	self.optionsFrame["moduleName"] = AceConfigDialog:AddToBlizOptions("GatherMate2", moduleName, "GatherMate2", moduleName)
 end
