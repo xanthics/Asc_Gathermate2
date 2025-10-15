@@ -14,7 +14,7 @@ local info = {}
 local pinCache = {}
 -- last x,y of the player.
 -- total number of pins we have created
-local lastX, lastY, lastXY, lastYY, pinCount = 0, 0, 0, 0, 0
+local lastC, lastX, lastY, lastXY, lastYY, pinCount = 0, 0, 0, 0, 0, 0
 local lastLevel = 0
 -- reference to the pin generating the UIDropDown
 local pinClickedOn
@@ -501,17 +501,14 @@ function Display:getMiniPin(coord, nodeID, nodeType, zone, index)
 		pin.texture:SetTexCoord(0, 1, 0, 1)
 		pin.texture:SetVertexColor(1, 1, 1, 1)
 		pin.x, pin.y, pin.level = GatherMate.mapData:DecodeLoc(coord)
-		pin.x1, pin.y1 = GatherMate:PointToYards(pin.x,pin.y,zone,pin.level)
 		minimapPins[index] = pin
 	end
 	return pin
 end
 
 function Display:addMiniPin(pin, refresh)
-	if WorldMapFrame:IsShown() then return end
-	local c1, z1, x1, y1 = Astrolabe:GetCurrentPlayerPosition()
-	if c1 == WORLDMAP_COSMIC_ID then return end -- We are not in an overworld map, abort
-	local dist, xDist, yDist = Astrolabe:ComputeDistance( c1, z1, x1, y1, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
+	--if lastC == WORLDMAP_COSMIC_ID then return end -- We are not in an overworld map, abort
+	local dist, xDist, yDist = Astrolabe:ComputeDistance( lastC, zone, lastX, lastY, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
 	if dist ~= nil and dist >= 0 then
 		-- if distance <= db.trackDistance, convert to the circle texture
 		if (not pin.isCircle or refresh) and trackShow[pin.nodeType] and dist <= db.trackDistance then
@@ -632,6 +629,7 @@ function Display:UpdateIconPositions()
 
 		-- update upvalues for icon placement
 		lastX, lastY = x, y
+		lastC = GetCurrentMapContinent()
 		lastLevel = level
 		lastFacing = facing
 
@@ -699,13 +697,11 @@ function Display:UpdateMiniMap(force)
 		minimapStrata = Minimap:GetFrameStrata()
 		minimapFrameLevel = Minimap:GetFrameLevel() + 5
 
-		-- calculate distance in yards
-		local _x, _y =  GatherMate:PointToYards(x, y, zone, level)
 		-- update upvalues for icon placement
 		lastX, lastY = x, y
+		lastC = GetCurrentMapContinent()
 		lastZoom = zoom
 		lastFacing = facing
-		lastXY, lastYY = _x, _y
 		lastLevel = level
 
 		if rotateMinimap then

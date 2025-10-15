@@ -284,9 +284,6 @@ end
 --[[
 	convert a point on the map to yard values
 ]]
-function GatherMate:PointToYards(x,y,zone,level)
-	return self.mapData:PointToYards(zone,level,x,y)
-end
 
 --[[
 	Node id function forward and reverse
