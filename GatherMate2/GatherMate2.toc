@@ -15,9 +15,7 @@
 ## X-Category: Map
 ## Version: 1.0.4
 ## X-License: ARR
-## OptionalDeps: Ace3, LibDataBroker-1.1, LibMapData-1.0
-
-Libs\LibMapData-1.0\library.lua
+## OptionalDeps: Ace3, LibDataBroker-1.1
 
 Locales\GatherMate2-enUS.lua
 Locales\GatherMate2-esES.lua
@@ -30,6 +28,7 @@ Locales\GatherMate2-ruRU.lua
 
 ## Order is important
 GatherMate2.lua
+Libs\LibMapDataExtract.lua
 Collector.lua
 Display.lua
 Constants.lua
