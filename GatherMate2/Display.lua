@@ -508,44 +508,45 @@ function Display:getMiniPin(coord, nodeID, nodeType, zone, index)
 end
 
 function Display:addMiniPin(pin, refresh)
-	if WorldMapFrame:IsShown() or GetCurrentMapAreaID() == 0 then clearpins(minimapPins) Astrolabe:RemoveAllMinimapIcons() return end
+	if WorldMapFrame:IsShown() then return end
 	local c1, z1, x1, y1 = Astrolabe:GetCurrentPlayerPosition()
-	if c1 == -1 then return end -- We are not in an overworld map, abort
+	if c1 == WORLDMAP_COSMIC_ID then return end -- We are not in an overworld map, abort
 	local dist, xDist, yDist = Astrolabe:ComputeDistance( c1, z1, x1, y1, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
-
-	-- if distance <= db.trackDistance, convert to the circle texture
-	if (not pin.isCircle or refresh) and trackShow[pin.nodeType] and dist <= db.trackDistance then
-		pin.texture:SetTexture(trackingCircle)
-		local t = db.trackColors[pin.nodeType]
-		pin.texture:SetVertexColor(t.Red, t.Green, t.Blue, t.Alpha)
-		pin:SetHeight(10 / minimapScale)
-		pin:SetWidth(10 / minimapScale)
-		pin.isCircle = true
-		pin.texture:SetTexCoord(0, 1, 0, 1)
-	-- if distance > 100, set back to the node texture
-	elseif (pin.isCircle or refresh) and dist > db.trackDistance then
-		pin:SetHeight(12 * db.scale / minimapScale)
-		pin:SetWidth(12 * db.scale / minimapScale)
-		pin.texture:SetTexture(nodeTextures[pin.nodeType][pin.nodeID])
-		pin.texture:SetVertexColor(1, 1, 1, 1)
-		pin.texture:SetTexCoord(0, 1, 0, 1)
-		pin.isCircle = false
-	end
-
-	-- if distance > 1, then adapt node position to slide on the border, and set the node alpha accordingly
-	local alpha = 1
-	if dist > Minimap:GetViewRadius() then
-		alpha = 1-(dist/(Minimap:GetViewRadius()*1.5))
-		if alpha < 0 then
-			pin.keep = nil
+	if dist ~= nil and dist >= 0 then
+		-- if distance <= db.trackDistance, convert to the circle texture
+		if (not pin.isCircle or refresh) and trackShow[pin.nodeType] and dist <= db.trackDistance then
+			pin.texture:SetTexture(trackingCircle)
+			local t = db.trackColors[pin.nodeType]
+			pin.texture:SetVertexColor(t.Red, t.Green, t.Blue, t.Alpha)
+			pin:SetHeight(10 / minimapScale)
+			pin:SetWidth(10 / minimapScale)
+			pin.isCircle = true
+			pin.texture:SetTexCoord(0, 1, 0, 1)
+		-- if distance > 100, set back to the node texture
+		elseif (pin.isCircle or refresh) and dist > db.trackDistance then
+			pin:SetHeight(12 * db.scale / minimapScale)
+			pin:SetWidth(12 * db.scale / minimapScale)
+			pin.texture:SetTexture(nodeTextures[pin.nodeType][pin.nodeID])
+			pin.texture:SetVertexColor(1, 1, 1, 1)
+			pin.texture:SetTexCoord(0, 1, 0, 1)
+			pin.isCircle = false
 		end
-	end
-	-- finally show and SetPoint the pin
-	if db.nodeRange or alpha >= 1 then
-		local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
-		pin:SetAlpha(min(alpha+0.5,db.alpha))
-	else
-		pin:Hide()
+
+		-- if distance > 1, then adapt node position to slide on the border, and set the node alpha accordingly
+		local alpha = 1
+		if dist > Minimap:GetViewRadius() then
+			alpha = 1-(dist/(Minimap:GetViewRadius()*1.5))
+			if alpha < 0 then
+				pin.keep = nil
+			end
+		end
+		-- finally show and SetPoint the pin
+		if db.nodeRange or alpha >= 1 then
+			local result = Astrolabe:PlaceIconOnMinimap(pin, GetCurrentMapContinent(), pin.zone, pin.x, pin.y)
+			pin:SetAlpha(min(alpha+0.5,db.alpha))
+		else
+			pin:Hide()
+		end
 	end
 end
 --[[
