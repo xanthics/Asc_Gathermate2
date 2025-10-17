@@ -21,7 +21,7 @@ for cID = 1, #continentList do
 end
 
 -- Don't know a better way
--- Build list of overworld maps
+-- Build list of areaIDs
 for i=0,9999 do
 	if C_WorldMap.GetWorldPosition(i, 0, 0) then -- and mapToLocal[C_WorldMap.GetMapFileByAreaID(i)] then
 		local x1, y1 = C_WorldMap.GetWorldPosition(i, 0, 0)
