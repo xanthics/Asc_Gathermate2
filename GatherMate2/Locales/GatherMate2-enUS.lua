@@ -288,6 +288,7 @@ NL["Imperial Manta Ray School"] = true
 NL["Incendicite Mineral Vein"] = true
 NL["Indurium Mineral Vein"] = true
 NL["Iron Deposit"] = true
+NL["Jinxed Hoodoo Pile"] = true
 NL["Khadgar's Whisker"] = true
 NL["Khorium Vein"] = true
 NL["Kingsblood"] = true

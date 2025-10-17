@@ -209,6 +209,7 @@ local node_ids = {
 		[NL["Everfrost Chip"]]					= 532,
 		[NL["Brightly Colored Egg"]]			= 533,
 		[NL["Worldforged Item"]]				= 534,
+		[NL["Jinxed Hoodoo Pile"]]				= 535,
 	},
 	["Woodcutting"] = {
 		[NL["Ashenvale Tree"]]					= 601,
@@ -519,7 +520,8 @@ local node_textures = {
 		[531] = icon_path.."Treasure\\egg.tga",
 		[532] = icon_path.."Treasure\\everfrost.tga",
 		[533] = icon_path.."Treasure\\egg.tga",
-		[534] = icon_path.."Treasure\\worldforged.tga", -- TODO
+		[534] = icon_path.."Treasure\\worldforged.tga", 
+		[535] = icon_path.."Treasure\\jinxed.tga", -- todo
 	},
 	["Woodcutting"] = {
 		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
