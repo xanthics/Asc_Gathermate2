@@ -227,6 +227,7 @@ local unique_offset = {
 	["Mining"]         = 3e9,
 	["Extract Gas"]    = 4e9,
 	["Treasure"]       = 5e9,
+	["Woodcutting"]    = 6e9,
 }
 
 function GatherHud:FullUpdate(force)
