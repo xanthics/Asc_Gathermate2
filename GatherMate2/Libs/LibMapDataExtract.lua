@@ -61,6 +61,10 @@ function GatherMate.mapData:GetAllMapIDs(id)
 	return nametoid
 end
 
+function GatherMate.mapData:MapAreaId(mapFile)
+	return nametoid[mapFile]
+end
+
 function GatherMate.mapData:MapArea(id)
 	if type(id) == "string" then
 		mapfile = nametoid[id]
