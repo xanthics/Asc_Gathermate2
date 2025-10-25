@@ -5,4 +5,4 @@ Ascension port of Gathermate 2 v1.0.3 from wow version 4.0.1.  This addon is unl
 ## Install
 Code -> download zip -> Extract
 
-Move the **GatherMate2** and **GatherMate2_Data** folders, that is in the same folder as this README, to your addons directory.  Use the import option in Interface/Addon settings to populate existing nodes.
+Move the **GatherHud**(optional), **GatherMate2** and **GatherMate2_Data** folders, that is in the same folder as this README, to your addons directory.  Use the import option in Interface/Addon settings to populate existing nodes.
