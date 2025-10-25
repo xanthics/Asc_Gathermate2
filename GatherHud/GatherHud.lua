@@ -44,6 +44,10 @@ local defaults = {
 			show_circle   = true,
 			show_north    = true,
 			show_routes   = true,
+			hide_combat	  = true,
+			hide_instance = false,
+			hide_resting  = true
+
 		}
 	}
 }
@@ -130,9 +134,9 @@ update:SetScript("OnUpdate", function(self, elapsed)
 	last_update = last_update + elapsed
 
 	-- Don't do anything if we're in an instance or resting
-	in_instance = IsInInstance()
-	is_resting = IsResting()
-	in_combat = InCombatLockdown()
+	in_instance = db.settings.hide_instance and IsInInstance()
+	is_resting = db.settings.hide_resting and IsResting()
+	in_combat = db.settings.hide_combat and InCombatLockdown()
 	if in_instance or is_resting or in_combat then
 		hud:Hide()
 		return
@@ -663,6 +667,33 @@ local options = {
 						GatherHud:DrawSelf()
 					end,
 					order = 135,
+				},
+				hide_instance = {
+					name = L["Hide in Instance"], type = "toggle",
+					desc = L["Hide the Hud while you are in an instance"],
+					arg = "hide_instance",
+					set = function(info, v)
+						db.settings.hide_instance = v
+					end,
+					order = 136,
+				},
+				hide_combat = {
+					name = L["Hide in Combat"], type = "toggle",
+					desc = L["Hide the Hud while you are in combat"],
+					arg = "hide_combat",
+					set = function(info, v)
+						db.settings.hide_combat = v
+					end,
+					order = 137,
+				},
+				hide_resting = {
+					name = L["Hide while Resting"], type = "toggle",
+					desc = L["Hide the Hud while you are resting in a town or inn"],
+					arg = "hide_resting",
+					set = function(info, v)
+						db.settings.hide_resting = v
+					end,
+					order = 138,
 				},
 				angleofview = {
 					name = L["Angle of view"], type = "group",

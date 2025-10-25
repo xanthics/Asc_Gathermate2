@@ -36,6 +36,12 @@ L["Minimum Pitch"] = true
 L["Do not allow the GatherHud camera pitch to go below this angle"] = true
 L["Use Character Pitch"] = true
 L["Use the Character pitch instead of a user-specified angle"] = true
+L["Hide in Instance"] = true
+L["Hide the Hud while you are in an instance"] = true
+L["Hide in Combat"] = true
+L["Hide the Hud while you are in combat"] = true
+ L["Hide while Resting"] = true
+L["Hide the Hud while you are resting in a town or inn"] = true
 
 -- GatherHud Icon Options
 L["GatherHud Icon Options"] = true
