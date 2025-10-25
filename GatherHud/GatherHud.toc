@@ -4,7 +4,7 @@
 ## Notes: GatherHud for GatherMate2 with Routes support
 ## Notes-frFR: GatherHud pour GatherMate2 avec support de Routes.
 ## Author: Grum, Xinhuan
-## Version: v1.1.7
+## Version: asc-1.0.0 (v1.1.7 base)
 ## DefaultState: enabled
 ## X-Category: Map
 ## X-eMail: routes @ grum DOT nl & xinhuan @ gmail DOT com

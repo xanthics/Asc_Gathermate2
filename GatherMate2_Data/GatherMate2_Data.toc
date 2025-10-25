@@ -8,7 +8,7 @@
 ## Author: kagaro, Xinhuan, Ascension Compat by Xan
 ## X-Category: Map
 ## X-Email: sal.scotto@gmail.com
-## Version: 1.0.2
+## Version: asc-1.0.2 (v1.4.0 base)
 ## LoadOnDemand: 1
 ## X-Generated-Version: $Revision: 6 $
 ## Dependencies: GatherMate2
