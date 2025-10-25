@@ -190,6 +190,7 @@ L["Display"] = true
 L["Database"] = true
 L["Import"] = true
 L["Profiles"] = true
+L["Show Nodes"] = true
 
 
 local NL = LibStub("AceLocale-3.0"):NewLocale("GatherMate2Nodes", "enUS", true, debug)

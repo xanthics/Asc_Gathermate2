@@ -399,7 +399,7 @@ function Display:CreateWorldMapCheckbox()
 	if worldmapCheckbox then return end
 
 	local checkbox = LibStub("AceGUI-3.0"):Create("CheckBox")
-	checkbox:SetLabel("Show Nodes")
+	checkbox:SetLabel(L["Show Nodes"])
 	checkbox:SetWidth(90)
 	checkbox:SetValue(db.showWorldMap)
 	checkbox:SetCallback("OnValueChanged", function(widget, event, value)
