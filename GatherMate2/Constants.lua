@@ -162,6 +162,7 @@ local node_ids = {
 		[NL["Firethorn"]]						= 451,
 		[NL["Frozen Herb"]]						= 452,
 		[NL["Frost Lotus"]]						= 453, -- found in lake wintergrasp only
+		[NL["Emerald Amanita"]]					= 454, -- found in felwood warpwood cave only?
 	},
 	["Treasure"] = {
 		[NL["Giant Clam"]] 						= 501,
@@ -396,12 +397,6 @@ local node_textures = {
 		[230] = icon_path.."Mine\\titanium.tga",
 		[231] = icon_path.."Mine\\saronite.tga",
 		[232] = icon_path.."Mine\\saronite.tga",
-		[233] = icon_path.."Mine\\obsidian.tga",
-		[234] = icon_path.."Mine\\store_tablet.tga",
-		[235] = icon_path.."Mine\\saronite.tga",
-		[236] = icon_path.."Mine\\elementium.tga",
-		[237] = icon_path.."Mine\\elementium.tga",
-		[238] = icon_path.."Mine\\pyrite.tga",
 	},
 	["Extract Gas"] = {
 		[301] = icon_path.."Gas\\windy_cloud.tga",
@@ -467,13 +462,8 @@ local node_textures = {
 		[451] = icon_path.."Herb\\briarthorn.tga",
 		[452] = icon_path.."Herb\\misc_flower.tga",
 		[453] = icon_path.."Herb\\frostlotus.tga",
-		[454] = icon_path.."Herb\\dragonsteeth.tga",
-		[455] = icon_path.."Herb\\whiptail.tga",
-		[456] = icon_path.."Herb\\azsharasveil.tga",
-		[457] = icon_path.."Herb\\cinderbloom.tga",
-		[458] = icon_path.."Herb\\stormvine.tga",
-		[459] = icon_path.."Herb\\heartblossom.tga",
-		[460] = icon_path.."Herb\\twilightjasmine.tga",
+		[454] = icon_path.."Herb\\emeraldamanita.tga",
+
 	},
 	["Treasure"] = {
 		[501] = icon_path.."Treasure\\clam.tga",
@@ -521,7 +511,7 @@ local node_textures = {
 		[532] = icon_path.."Treasure\\everfrost.tga",
 		[533] = icon_path.."Treasure\\egg.tga",
 		[534] = icon_path.."Treasure\\worldforged.tga", 
-		[535] = icon_path.."Treasure\\jinxed.tga", -- todo
+		[535] = icon_path.."Treasure\\jinxed.tga", 
 	},
 	["Woodcutting"] = {
 		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
@@ -588,12 +578,6 @@ local node_minharvest = {
 		[230] = 450,
 		[231] = 400,
 		[232] = 425,
-		[233] = 450,
-		[234] = 450,
-		[235] = 500,
-		[236] = 450,
-		[237] = 500,
-		[238] = 525,
 	},
 	["Extract Gas"] = {
 		[301] = 305,
@@ -659,13 +643,7 @@ local node_minharvest = {
 		[452] = 415,
 		[452] = 425,
 		[453] = 425,
-		[454] = 195,
-		[455] = 285,
-		[456] = 425,
-		[457] = 425,
-		[458] = 425,
-		[459] = 475,
-		[460] = 525,
+		[454] = 260,
 	},
 	["Treasure"] = {
 		[505] = 25,

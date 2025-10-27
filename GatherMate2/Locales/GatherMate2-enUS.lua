@@ -425,3 +425,4 @@ NL["Teldrassil Tree"] = true
 NL["Tirisfal Tree"] = true
 NL["Westfall Tree"] = true
 NL["Winterspring Tree"] = true
+NL["Emerald Amanita"] = true
