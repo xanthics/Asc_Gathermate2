@@ -713,7 +713,7 @@ options.args.cleanup = {
 								["Mining"] = L["Mineral Veins"],
 								["Extract Gas"] = L["Gas Clouds"],
 								["Woodcutting"] = L["Woodcutting"],
-								["Worldforged"] = L["Worldforge Items"],
+								["Worldforged"] = L["World Interactable"],
 							},
 							get = function() return selectedDatabase end,
 							set = function(k, v)
@@ -986,7 +986,7 @@ ImportHelper.db_tables = {
 	["Fish"] = L["Fishing"],
 	["Treasure"] = L["Treasure"],
 	["Woodcutting"] = L["Woodcutting"],
-	["Worldforged"] = L["Worldforge Items"],
+	["Worldforged"] = L["World Interactable"],
 }
 ImportHelper.expac_data = {
 	["TBC"] = L["The Burning Crusades"],

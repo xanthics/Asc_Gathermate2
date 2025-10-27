@@ -209,7 +209,7 @@ local node_ids = {
 		[NL["Netherwing Egg"]] 					= 531,
 		[NL["Everfrost Chip"]]					= 532,
 		[NL["Brightly Colored Egg"]]			= 533,
-		[NL["Worldforged Item"]]				= 534,
+		[NL["World Interactable"]]				= 534,
 		[NL["Jinxed Hoodoo Pile"]]				= 535,
 	},
 	["Woodcutting"] = {
