@@ -426,3 +426,6 @@ NL["Tirisfal Tree"] = true
 NL["Westfall Tree"] = true
 NL["Winterspring Tree"] = true
 NL["Emerald Amanita"] = true
+NL["Hidden Cache"] = true -- High Risk
+NL["Rare Hidden Cache"] = true -- High Risk
+NL["Epic Hidden Cache"] = true -- High Risk

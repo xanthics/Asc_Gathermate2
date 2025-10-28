@@ -211,6 +211,9 @@ local node_ids = {
 		[NL["Brightly Colored Egg"]]			= 533,
 		[NL["World Interactable"]]				= 534,
 		[NL["Jinxed Hoodoo Pile"]]				= 535,
+		[NL["Hidden Cache"]]					= 536, -- High Risk
+		[NL["Rare Hidden Cache"]]				= 537, -- High Risk
+		[NL["Epic Hidden Cache"]]				= 538, -- High Risk
 	},
 	["Woodcutting"] = {
 		[NL["Ashenvale Tree"]]					= 601,
@@ -512,6 +515,9 @@ local node_textures = {
 		[533] = icon_path.."Treasure\\egg.tga",
 		[534] = icon_path.."Treasure\\worldforged.tga", 
 		[535] = icon_path.."Treasure\\jinxed.tga", 
+		[536] = icon_path.."Treasure\\treasure_u.tga", 
+		[537] = icon_path.."Treasure\\treasure_r.tga", 
+		[538] = icon_path.."Treasure\\treasure_e.tga", 
 	},
 	["Woodcutting"] = {
 		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
