@@ -174,6 +174,18 @@ function GatherMate:AddNode(zone, x, y, level, nodeType, name)
 	self:SendMessage("GatherMate2NodeAdded", zone, nodeType, id, name)
 end
 
+function GatherMate:AddNodeByID(zone, x, y, level, nodeType, nodeid)
+	local db = gmdbs[nodeType]
+	local id = self.mapData:EncodeLoc(x,y,level)
+	-- db lock check
+	if GatherMate.db.profile.dbLocks[nodeType] then
+		return
+	end
+	db[zone] = db[zone] or {}
+	db[zone][id] = nodeid
+	self:SendMessage("GatherMate2NodeAdded", zone, nodeType, id, nodeid)
+end
+
 --[[
 	These 2 functions are only called by the importer/sharing. These
 	do NOT fire GatherMateNodeAdded or GatherMateNodeDeleted messages.
