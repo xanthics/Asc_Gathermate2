@@ -569,6 +569,7 @@ local treasure = {
 	[967048] = 536, -- Hidden Cache
 	[967049] = 537, -- Rare Hidden Cache
 	[967050] = 538, -- Epic Hidden Cache
+	[394922] = 539, -- Intangible Rose
 	-- Burning Steppes
 	[967039] = 536, -- Hidden Cache
 	[967040] = 537, -- Rare Hidden Cache
