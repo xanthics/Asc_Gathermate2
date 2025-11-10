@@ -1122,6 +1122,158 @@ options.args.faq_group = {
 	},
 }
 
+local function config_toggle_get(info) return GatherMate.db.profile[info[#info]] end
+local function config_toggle_set(info, v) GatherMate.db.profile[info[#info]] = v end
+
+options.args.sharedata = {
+	type = "group",
+	name = L["Share Data"],
+	desc = L["Settings for sharing of Node Data with other players"],
+	order = -1,
+	args = {
+		desc = {
+			type = "description",
+			name = L["SHARE_TEXT"],
+			order = 0,
+		},
+		ignore = {
+			name = L["Ignore Players"],
+			type = "group",
+			guiInline = true,
+			order = 1,
+			args = {
+				ignored_players = {
+					type = "input",
+					name = L["Ignored Players - Case Matters"],
+					desc = L["Comma seperated list of players you are ignoring node data from.  EG: p1,p2 , p3"],
+					width = "full",
+					get = function(info)
+						local names = ""
+						for name, _ in pairs(GatherMate.db.profile.ignored_players) do
+							names = names .. name .. ","
+						end
+						return names
+					end,
+					set = function(info, value)
+						local people = {}
+						for person in string.gmatch(value, "([^,]+)") do
+							person = string.gsub(person, '%s*', '') -- remove any whitespace
+							if person ~= "" then
+								people[person] = true
+							end
+						end
+						GatherMate.db.profile.ignored_players = people
+					end,
+				},
+			},
+		},
+		print = {
+			name = L["Print Options"],
+			type = "group",
+			guiInline = true,
+			order = 3,
+			args = {
+				print_gather = {
+					type = "toggle",
+					name = L["Your Gathers"],
+					desc = L["Print data when you gather a node"],
+					order = 4,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				print_guild = {
+					type = "toggle",
+					name = L["Guild Gathers"],
+					desc = L["Print data when you get a node from guild"],
+					order = 1,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				print_party = {
+					type = "toggle",
+					name = L["Party Gathers"],
+					desc = L["Print data when you get a node from party"],
+					order = 2,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				print_raid = {
+					type = "toggle",
+					name = L["Raid Gathers"],
+					desc = L["Print data when you get a node from raid"],
+					order = 3,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+			},
+		},
+		accept = {
+			name = L["Accept Nodes"],
+			type = "group",
+			guiInline = true,
+			order = 2,
+			args = {
+				accept_guild = {
+					type = "toggle",
+					name = L["Guild Gathers"],
+					desc = L["Accept Data from other players in your Guild"],
+					order = 1,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				accept_party = {
+					type = "toggle",
+					name = L["Party Gathers"],
+					desc = L["Accept Data from other players in your Party"],
+					order = 2,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				accept_raid = {
+					type = "toggle",
+					name = L["Raid Gathers"],
+					desc = L["Accept Data from other players in your Raid"],
+					order = 3,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+			},
+		},
+		send = {
+			name = L["Send Nodes"],
+			type = "group",
+			guiInline = true,
+			order = 3,
+			args = {
+				send_guild = {
+					type = "toggle",
+					name = L["Guild"],
+					desc = L["Send Data to other players in your Guild"],
+					order = 1,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				send_party = {
+					type = "toggle",
+					name = L["Party"],
+					desc = L["Send Data to other players in your Party"],
+					order = 2,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+				send_raid = {
+					type = "toggle",
+					name = L["Raid"],
+					desc = L["Send Data to other players in your Raid"],
+					order = 3,
+					get = config_toggle_get,
+					set = config_toggle_set,
+				},
+			},
+		},
+	},
+}
+
 
 --[[
 	Initialize the Config System
@@ -1133,7 +1285,12 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 function Config:OnInitialize()
 	db = GatherMate.db.profile
+	if not db.ignored_players then db.ignored_players = {} end
+	if not db.SinkOptions then db.SinkOptions = {} end
+	GatherMate:SetSinkStorage(db.SinkOptions)
 	options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(GatherMate2.db)
+	options.args.output = GatherMate:GetSinkAce3OptionsDataTable()
+
 	self.importHelper = ImportHelper
 	AceConfig:RegisterOptionsTable("GatherMate2", options)
 	self.optionsFrame = LibStub("LibAboutPanel").new(nil, "GatherMate2")
@@ -1142,6 +1299,8 @@ function Config:OnInitialize()
 	self.optionsFrame.Import = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Import"], "GatherMate2", "importing")
 	self.optionsFrame.FAQ = AceConfigDialog:AddToBlizOptions("GatherMate2", L["FAQ"], "GatherMate2", "faq_group")
 	self.optionsFrame.Profiles = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Profiles"], "GatherMate2", "profiles")
+	self.optionsFrame.DataShare = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Share Data"], "GatherMate2", "sharedata")
+	self.optionsFrame.Output = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Output"], "GatherMate2", "output")
 	--AceConfigDialog:AddToBlizOptions("GatherMate2", "GatherMate2")
 	self:RegisterChatCommand("gathermate", function() AceConfigDialog:Open("GatherMate2") end )
 	self:RegisterMessage("GatherMate2ConfigChanged")

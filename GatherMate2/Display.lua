@@ -509,7 +509,6 @@ end
 function Display:addMiniPin(pin, refresh)
 	-- don't update pins if world map is open.  Can change map
 	if WorldMapFrame:IsShown() then return end
-	
 	local dist, xDist, yDist = Astrolabe:ComputeDistance( lastC, zone, lastX, lastY, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
 	if dist ~= nil and dist >= 0 then
 		-- if distance <= db.trackDistance, convert to the circle texture
@@ -649,7 +648,7 @@ end
 ]]
 function Display:UpdateMiniMap(force)
 	if not db.showMinimap or not Minimap:IsVisible() then return end
-	if not WorldMapFrame:IsShown() then SetMapToCurrentZone() else return end
+	if WorldMapFrame:IsShown() then return else SetMapToCurrentZone() end
 
 	-- update our zone info
 	zone = GetCurrentMapAreaID()
@@ -793,6 +792,7 @@ function Display:UpdateWorldMap(force)
 	lastLevel = mapLevel
 	rememberForce = false
 end
+function GatherMate:UpdateWorldMap(force) Display:UpdateWorldMap(force) end
 
 --[[
 	This function is for external addons to call to reparent all existing

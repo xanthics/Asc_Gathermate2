@@ -191,6 +191,35 @@ L["Database"] = true
 L["Import"] = true
 L["Profiles"] = true
 L["Show Nodes"] = true
+L["Share Data"] = true
+L["Settings for sharing of Node Data with other players"] = true
+L["Ignore Players"] = true
+L["Ignored Players - Case Matters"] = true
+L["Comma seperated list of players you are ignoring node data from.  EG: p1,p2 , p3"] = true
+L["Print Options"] = true
+L["Your Gathers"] = true
+L["Print data when you gather a node"] = true
+L["Guild Gathers"] = true
+L["Print data when you get a node from guild"] = true
+L["Party Gathers"] = true
+L["Print data when you get a node from party"] = true
+L["Raid Gathers"] = true
+L["Print data when you get a node from raid"] = true
+L["Accept Nodes"] = true
+L["Accept Data from other players in your Guild"] = true
+L["Accept Data from other players in your Party"] = true
+L["Accept Data from other players in your Raid"] = true
+L["SHARE_TEXT"] = [=[The following settings allow you to fine tune how you send and receive node data from other players.
+If you are in the same party in a Raid, messages are sent as party instead of raid.
+]=]
+L["Send Nodes"] = true
+L["Guild"] = true
+L["Send Data to other players in your Guild"] = true
+L["Party"] = true
+L["Send Data to other players in your Party"] = true
+L["Raid"] = true
+L["Send Data to other players in your Raid"] = true
+L["Output"] = true
 
 
 local NL = LibStub("AceLocale-3.0"):NewLocale("GatherMate2Nodes", "enUS", true, debug)

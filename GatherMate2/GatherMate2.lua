@@ -171,7 +171,9 @@ function GatherMate:AddNode(zone, x, y, level, nodeType, name)
 		return
 	end
 	db[zone] = db[zone] or {}
-	db[zone][id] = self.nodeIDs[nodeType][name]
+	local nodeid = self.nodeIDs[nodeType][name]
+	db[zone][id] = nodeid
+	GatherMate:SendNode(zone, id, nodeType, nodeid)
 	self:SendMessage("GatherMate2NodeAdded", zone, nodeType, id, name)
 end
 
@@ -184,6 +186,7 @@ function GatherMate:AddNodeByID(zone, x, y, level, nodeType, nodeid)
 	end
 	db[zone] = db[zone] or {}
 	db[zone][id] = nodeid
+	GatherMate:SendNode(zone, id, nodeType, nodeid)
 	self:SendMessage("GatherMate2NodeAdded", zone, nodeType, id, nodeid)
 end
 
