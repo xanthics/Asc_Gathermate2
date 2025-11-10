@@ -232,6 +232,7 @@ function Collector:addItem(skill,what)
 	-- so we ignore the new Death Knight starting zone for now.
 	-- if GetMapInfo() == "ScarletEnclave" then return end TODO Validate in wrath, shoud be fine
 	--self:GatherCompleted()
+	if WorldMapFrame:IsShown() then return else SetMapToCurrentZone() end
 	local zone = GetCurrentMapAreaID()
 	local level = GetCurrentMapDungeonLevel()
 	local node_type = spells[skill]
@@ -634,6 +635,7 @@ function Collector:GameObject(event, objid)
 	-- so we ignore the new Death Knight starting zone for now.
 	-- if GetMapInfo() == "ScarletEnclave" then return end TODO Validate in wrath, shoud be fine
 	--self:GatherCompleted()
+	if WorldMapFrame:IsShown() then return else SetMapToCurrentZone() end
 	local zone = GetCurrentMapAreaID()
 	local level = GetCurrentMapDungeonLevel()
 	local node_type, node_id
