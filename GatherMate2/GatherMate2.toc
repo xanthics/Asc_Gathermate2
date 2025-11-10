@@ -17,6 +17,8 @@
 ## X-License: ARR
 ## OptionalDeps: Ace3, LibDataBroker-1.1
 
+Libs\Libs.xml
+
 Locales\GatherMate2-enUS.lua
 Locales\GatherMate2-esES.lua
 Locales\GatherMate2-frFR.lua
@@ -28,7 +30,8 @@ Locales\GatherMate2-ruRU.lua
 
 ## Order is important
 GatherMate2.lua
-Libs\LibMapDataExtract.lua
+PatchNotes.lua
+LibMapDataExtract.lua
 Collector.lua
 Display.lua
 Constants.lua

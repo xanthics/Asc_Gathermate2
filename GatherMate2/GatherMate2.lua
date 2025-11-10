@@ -4,7 +4,7 @@
 	This mods whole purpose is to be lean, simple and feature complete.
 ]]
 -- Mixin AceEvent
-local GatherMate = LibStub("AceAddon-3.0"):NewAddon("GatherMate2","AceConsole-3.0","AceEvent-3.0")
+local GatherMate = LibStub("AceAddon-3.0"):NewAddon("GatherMate2","AceConsole-3.0","AceEvent-3.0","NewsFrame-1.0","LibSink-2.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2",false)
 _G["GatherMate2"] = GatherMate
 
@@ -99,6 +99,7 @@ function GatherMate:OnInitialize()
 	self:RegisterDBType("Woodcutting", GatherMate2TreeDB)
 	db = self.db.profile
 	filter = db.filter
+	self:PatchNotes()
 end
 
 --[[
