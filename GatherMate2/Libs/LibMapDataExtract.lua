@@ -67,7 +67,7 @@ end
 
 function GatherMate.mapData:MapArea(id)
 	if type(id) == "string" then
-		mapfile = nametoid[id]
+		id = nametoid[id]
 	end
     if idtodxdy[id] then
     	return idtodxdy[id][1], idtodxdy[id][2]
