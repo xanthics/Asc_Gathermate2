@@ -1,5 +1,5 @@
 local version, news, addonName, addonDB
-local MAJOR, MINOR = "NewsFrame-1.0", 3
+local MAJOR, MINOR = "NewsFrame-1.0", 4
 local NewsFrame, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not NewsFrame then return end -- No Upgrade needed.
@@ -23,7 +23,7 @@ function NewsFrame:InitializeNewsFrame(db, newsTable, addon)
     version = GetAddOnMetadata(addonName, "Version")
     addonDB.AutoShowNews = addonDB.AutoShowNews or addonDB.AutoShowNews and addonDB.AutoShowNews ~= false and true
     if not addonDB.NewsVersion or addonDB.NewsVersion ~= version then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFFFFF00|Hspell:"..addonName..":NewsLink|h"..addonName.." has been updated|cff00ffff [Click:Open News]|h|r")
+        DEFAULT_CHAT_FRAME:AddMessage("|H"..string.lower(addon).."newsframe:|h|cFFFFFF00"..addonName.." has been updated|cff00ffff [Click:Open News]|h|r")
         if addonDB.AutoShowNews then
             Timer.After(5, function() self:OpenNewsFrame() end)
         end
@@ -31,13 +31,8 @@ function NewsFrame:InitializeNewsFrame(db, newsTable, addon)
     addonDB.NewsVersion = version
     news = newsTable
 
-    hooksecurefunc("SetItemRef", function(link)
-        local linkType, addon, param1 = strsplit(":", link)
-        if linkType == "spell" and addon == addonName then
-            if param1 == "NewsLink" then
-                self:OpenNewsFrame()
-            end
-        end
+    LinkUtil:AddHandler(string.lower(addon).."newsframe", function(link)
+        NewsFrame:OpenNewsFrame()
     end)
 end
 
