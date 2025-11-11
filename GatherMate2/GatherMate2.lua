@@ -201,6 +201,10 @@ function GatherMate:InjectNode(zone, coords, nodeType, nodeID)
 		return
 	end
 	db[zone] = db[zone] or {}
+	while db[zone][coords] do
+		if db[zone][coords] == nodeID then break end
+		coords = coords + 1000100
+	end
 	db[zone][coords] = nodeID
 end
 function GatherMate:DeleteNode(zone, coords, nodeType)
