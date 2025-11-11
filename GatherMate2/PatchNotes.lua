@@ -3,6 +3,7 @@ local gatherNotes = {
     {"Version 1.0.7", "2025/11/10"},
         "Added patchnotes module from AtlasLoot",
         "Added Data Sharing Options",
+        "Added Tracking for more HR nodes",
 }
 
 function GatherMate:PatchNotes()
