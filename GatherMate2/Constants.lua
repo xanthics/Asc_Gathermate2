@@ -522,9 +522,10 @@ local node_textures = {
 		[536] = icon_path.."Treasure\\treasure_u.tga", 
 		[537] = icon_path.."Treasure\\treasure_r.tga", 
 		[538] = icon_path.."Treasure\\treasure_e.tga", 
-		[539] = icon_path.."Treasure\\intangiblerose.tga", 
-		[540] = icon_path.."Treasure\\clam.tga", 
-		[541] = icon_path.."Treasure\\lavabloom.tga", 
+		[539] = icon_path.."Treasure\\Spectral_Rose_Icon_64.tga", 
+		[540] = icon_path.."Treasure\\storm_brine_refined_rare.tga", 
+		[541] = icon_path.."Treasure\\lava_frond_blue_fume_zoom.tga", 
+		[542] = icon_path.."Treasure\\plague_blossom_refined_v5_64.tga", 
 	},
 	["Woodcutting"] = {
 		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
