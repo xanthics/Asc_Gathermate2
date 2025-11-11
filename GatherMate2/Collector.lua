@@ -583,6 +583,7 @@ local treasure = {
 	[967033] = 536, -- Hidden Cache
 	[967034] = 537, -- Rare Hidden Cache
 	[967035] = 538, -- Epic Hidden Cache
+	[395798] = 540, -- Carnivorous Clam
 	-- Eastern Plaguelands
 	[967042] = 536, -- Hidden Cache
 	[967043] = 537, -- Rare Hidden Cache
