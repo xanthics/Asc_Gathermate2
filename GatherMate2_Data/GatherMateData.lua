@@ -67,7 +67,7 @@ function GatherMateData:MergeNodes(clear, zoneFilter, ntype, sourcevar)
 	end
 	if clear then GatherMate:ClearDB(ntype) end
 	for zoneID, node_table in pairs(sourcevar) do
-		if zoneFilter and zoneFilter[zoneID] or not zoneFilter then
+		if not zoneFilter or (zoneFilter and zoneFilter[zoneID]) then
 			for nodeID, nodes in pairs(node_table) do
 				for _, coord in ipairs(nodes) do
 					GatherMate:InjectNode(zoneID, coord, ntype, nodeID)

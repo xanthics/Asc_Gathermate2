@@ -508,7 +508,8 @@ end
 
 function Display:addMiniPin(pin, refresh)
 	-- don't update pins if world map is open.  Can change map
-	if WorldMapFrame:IsShown() then return end
+	if WorldMapFrame:IsShown() then return else SetMapToCurrentZone() end
+
 	local dist, xDist, yDist = Astrolabe:ComputeDistance( lastC, zone, lastX, lastY, GetCurrentMapContinent(), pin.zone, pin.x, pin.y )
 	if dist ~= nil and dist >= 0 then
 		-- if distance <= db.trackDistance, convert to the circle texture
