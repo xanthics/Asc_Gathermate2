@@ -461,3 +461,4 @@ NL["Epic Hidden Cache"] = true -- High Risk
 NL["Intangible Rose"] = true -- High Risk
 NL["Carnivorous Clam"] = true -- High Risk
 NL["Lava Bloom"] = true -- High Risk
+NL["Ravenous Scourgethorn"] = true -- High Risk

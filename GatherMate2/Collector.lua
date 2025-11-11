@@ -589,6 +589,7 @@ local treasure = {
 	[967042] = 536, -- Hidden Cache
 	[967043] = 537, -- Rare Hidden Cache
 	[967044] = 538, -- Epic Hidden Cache
+	[395743] = 542, -- Ravenous Scourgethorn
 	--Western Plaguelands
 	[967045] = 536, -- Hidden Cache
 	[967046] = 537, -- Rare Hidden Cache

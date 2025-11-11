@@ -217,6 +217,7 @@ local node_ids = {
 		[NL["Intangible Rose"]]					= 539, -- High Risk
 		[NL["Carnivorous Clam"]]				= 540, -- High Risk
 		[NL["Lava Bloom"]]						= 541, -- High Risk
+		[NL["Ravenous Scourgethorn"]]			= 542, -- High Risk
 	},
 	["Woodcutting"] = {
 		[NL["Ashenvale Tree"]]					= 601,
