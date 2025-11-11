@@ -216,6 +216,7 @@ local node_ids = {
 		[NL["Epic Hidden Cache"]]				= 538, -- High Risk
 		[NL["Intangible Rose"]]					= 539, -- High Risk
 		[NL["Carnivorous Clam"]]				= 540, -- High Risk
+		[NL["Lava Bloom"]]						= 541, -- High Risk
 	},
 	["Woodcutting"] = {
 		[NL["Ashenvale Tree"]]					= 601,
@@ -522,6 +523,7 @@ local node_textures = {
 		[538] = icon_path.."Treasure\\treasure_e.tga", 
 		[539] = icon_path.."Treasure\\intangiblerose.tga", 
 		[540] = icon_path.."Treasure\\clam.tga", 
+		[541] = icon_path.."Treasure\\lavabloom.tga", 
 	},
 	["Woodcutting"] = {
 		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree

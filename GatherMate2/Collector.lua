@@ -575,6 +575,7 @@ local treasure = {
 	[967039] = 536, -- Hidden Cache
 	[967040] = 537, -- Rare Hidden Cache
 	[967041] = 538, -- Epic Hidden Cache
+	[395804] = 541, -- Lava Bloom
 	--Blasted Lands
 --	[000000] = 536, -- Hidden Cache
 --	[000000] = 537, -- Rare Hidden Cache
