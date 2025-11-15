@@ -566,6 +566,7 @@ local treasure = {
 	[380229] = 535, -- Jinxed Hoodoo Pile (zg so 2x, 3x, 4x same nodes)
 	[480228] = 535, -- Jinxed Hoodoo Pile (zg so 2x, 3x, 4x same nodes)
 	[480229] = 535, -- Jinxed Hoodoo Pile (zg so 2x, 3x, 4x same nodes)
+	[254475] = 543, -- Miru Berry Bush
 	--Silithus
 	[967048] = 536, -- Hidden Cache
 	[967049] = 537, -- Rare Hidden Cache

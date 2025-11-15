@@ -218,6 +218,7 @@ local node_ids = {
 		[NL["Carnivorous Clam"]]				= 540, -- High Risk
 		[NL["Lava Bloom"]]						= 541, -- High Risk
 		[NL["Ravenous Scourgethorn"]]			= 542, -- High Risk
+		[NL["Miru Berry"]]						= 543, -- found in Azshara only
 	},
 	["Woodcutting"] = {
 		[NL["Ashenvale Tree"]]					= 601,
@@ -526,6 +527,7 @@ local node_textures = {
 		[540] = icon_path.."Treasure\\storm_brine_refined_rare.tga", 
 		[541] = icon_path.."Treasure\\lava_frond_blue_fume_zoom.tga", 
 		[542] = icon_path.."Treasure\\plague_blossom_refined_v5_64.tga", 
+		[543] = icon_path.."Treasure\\inv_misc_food_vendor_witchberries.tga",
 	},
 	["Woodcutting"] = {
 		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
