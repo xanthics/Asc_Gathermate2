@@ -243,6 +243,7 @@ local node_ids = {
 		[NL["Tirisfal Tree"]]					= 620,
 		[NL["Westfall Tree"]]					= 621,
 		[NL["Winterspring Tree"]]				= 622,
+		[NL["Stranglethorn Palm"]]				= 623,
 	}
 }
 GatherMate.nodeIDs = node_ids
@@ -552,6 +553,7 @@ local node_textures = {
 		[620] = icon_path.."Tree\\GreenWoodLog", -- Tirisfal Tree
 		[621] = icon_path.."Tree\\SoftWoodLog", -- Westfall Tree
 		[622] = icon_path.."Tree\\ElderWoodLog", -- Winterspring Tree
+		[623] = icon_path.."Tree\\SeasonedWoodLog", -- Stranglethorn Palm
 	},
 }
 GatherMate.nodeTextures = node_textures
@@ -711,6 +713,7 @@ local node_minharvest = {
 		[620] = 1,
 		[621] = 50,
 		[622] = 275,
+		[623] = 125,
 	},
 }
 GatherMate.nodeMinHarvest = node_minharvest

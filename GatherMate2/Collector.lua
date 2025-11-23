@@ -627,6 +627,7 @@ local trees = {
 	[244624] = 620, -- Tirisfal Tree
 	[244617] = 621, -- Westfall Tree
 	[244635] = 622, -- Winterspring Tree
+	[244638] = 623, -- Stranglethorn Palm
 }
 
 local lastNode_ID = 0

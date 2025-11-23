@@ -454,6 +454,7 @@ NL["Teldrassil Tree"] = true
 NL["Tirisfal Tree"] = true
 NL["Westfall Tree"] = true
 NL["Winterspring Tree"] = true
+NL["Stranglethorn Palm"] = true
 NL["Emerald Amanita"] = true
 NL["Hidden Cache"] = true -- High Risk
 NL["Rare Hidden Cache"] = true -- High Risk
