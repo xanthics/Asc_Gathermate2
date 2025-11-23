@@ -530,7 +530,7 @@ local node_textures = {
 		[543] = icon_path.."Treasure\\inv_misc_food_vendor_witchberries.tga",
 	},
 	["Woodcutting"] = {
-		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
+		[601] = icon_path.."Tree\\SoftWoodLog", -- Ashenvale Tree
 		[602] = icon_path.."Tree\\HardWoodLog", -- Azshara Tree
 		[603] = icon_path.."Tree\\GreenWoodLog", -- Darkshore Tree
 		[604] = icon_path.."Tree\\GreenWoodLog", -- Dun Morogh Tree
