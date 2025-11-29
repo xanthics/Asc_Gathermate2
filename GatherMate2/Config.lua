@@ -5,10 +5,253 @@ local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2", false)
 
 -- Databroker support
 local DataBroker = LibStub:GetLibrary("LibDataBroker-1.1",true)
+local DBIcon = LibStub("LibDBIcon-1.0", true)
 
 --[[
 	Code here for configuring the mod, and making the minimap button
 ]]
+
+-- [[ ----------------------------------------------------------------------- ]]
+-- [[ CUSTOM HELPER FUNCTIONS START                                           ]]
+-- [[ ----------------------------------------------------------------------- ]]
+
+-- Flag to suppress spam on login
+local loginGracePeriod = true
+
+-- Variable to store last known skills to prevent cross-talk updates
+local lastSkills = {
+    ["Herb Gathering"] = -1,
+    ["Mining"] = -1,
+    ["Woodcutting"] = -1,
+    ["Treasure"] = -1
+}
+
+-- Variables for Hat Reminder
+local lastHatWarning = 0
+local HAT_IDS = {
+    HERB = 1004000, -- Herbalist's Hat
+    MINE = 1004001  -- Miner's Hat
+}
+local BUFF_NAMES = {
+    HERB = "Herbalism Speed",
+    MINE = "Mining Speed"
+}
+
+-- Safe method to get Skill (Vanilla/Ascension/WotLK compatible)
+local function GetSkillLevel(targetName)
+    local numSkills = GetNumSkillLines()
+    for i = 1, numSkills do
+        local skillName, _, _, skillRank, _, _, _, _, _, _, _, _, _ = GetSkillLineInfo(i)
+        
+        -- 1. Direct Match (English)
+        if skillName == targetName then
+            return skillRank
+        end
+        
+        -- 2. Translated Match (Safe Check)
+        -- We MUST check if targetName is a 'safe' key before asking L[] to avoid crashes
+        if targetName ~= "Lockpicking" and targetName ~= "Woodcutting" then
+            if skillName == L[targetName] then
+                return skillRank
+            end
+        end
+    end
+    return 0
+end
+
+-- Routing function to get the correct skill based on the database key
+local function GetProfessionSkill(profKey)
+    if profKey == "Herb Gathering" then return GetSkillLevel("Herbalism")
+    elseif profKey == "Mining" then return GetSkillLevel("Mining")
+    elseif profKey == "Woodcutting" then return GetSkillLevel("Woodcutting")
+    elseif profKey == "Treasure" then return GetSkillLevel("Lockpicking")
+    end
+    return 0
+end
+
+-- Icon Getter for Tooltips/Messages
+local function GetProfessionIcon(profKey)
+    if profKey == "Herb Gathering" then return "|TInterface\\Icons\\Trade_Herbalism:16|t "
+    elseif profKey == "Mining" then return "|TInterface\\Icons\\Trade_Mining:16|t "
+    elseif profKey == "Woodcutting" then return "|TInterface\\Icons\\INV_TradeskillItem_03:16|t "
+    elseif profKey == "Treasure" then return "|TInterface\\Icons\\Spell_Nature_MoonKey:16|t "
+    end
+    return ""
+end
+
+-- Text Display for the Menu
+local function GetSkillDisplayText(profKey)
+    local skill = GetProfessionSkill(profKey)
+    local name = (profKey == "Treasure") and "Lockpicking" or profKey
+    if profKey == "Herb Gathering" then name = "Herbalism" end
+    local icon = GetProfessionIcon(profKey)
+
+    if skill == 0 then
+        return icon .. "|cffff0000" .. name .. " Not Learned|r"
+    else
+        return icon .. "|cffffd700Current " .. name .. " Skill: " .. skill .. "|r"
+    end
+end
+
+-- Color logic
+local function GetSkillColor(req, current)
+    if not req or req == 0 then return "ffffff" end -- No level = White
+    
+    if current < req then return "ff0000" -- Red
+    elseif current >= (req + 100) then return "808080" -- Grey
+    elseif current >= (req + 50) then return "00ff00" -- Green
+    elseif current >= (req + 25) then return "ffff00" -- Yellow
+    else return "ff9900" -- Orange
+    end
+end
+
+-- Sorting Helper
+local function ResolveNodeKey(key, profKey)
+    local db = GatherMate.db.profile
+    local settings = db.customSettings and db.customSettings[profKey]
+    if settings and settings.sortLevel and string.match(key, "^%d%d%d_") then
+        return string.sub(key, 5)
+    end
+    return key
+end
+
+-- Logic to determine if a node should be selected
+local function IsNodeUseful(nodeID, profKey, isBackground)
+    local minHarvestTable = GatherMate.nodeMinHarvest[profKey]
+    if not minHarvestTable then return nil end
+
+    local req = minHarvestTable[nodeID]
+    
+    -- Special Case: No level requirement (e.g. Dirt Piles, Gas)
+    if not req or req == 0 then 
+        -- If this is a background auto-update, DO NOT touch generic items.
+        if isBackground then return nil end
+        return true 
+    end 
+
+    local currentSkill = GetProfessionSkill(profKey)
+
+    if currentSkill < req then return false -- Red
+    elseif currentSkill >= (req + 50) then return false -- Green/Grey
+    else return true -- Orange/Yellow
+    end
+end
+
+-- Auto-Update Worker
+local function PerformAutoUpdate(profKey, isBackground)
+    local db = GatherMate.db.profile
+    if not db.customSettings or not db.customSettings[profKey] then return end
+    if isBackground and not db.customSettings[profKey].autoUpdate then return end
+
+    local dbFilter = db.filter[profKey]
+    local nids = GatherMate.nodeIDs[profKey]
+    local changesMade = false
+    local playSound = db.customSettings[profKey].sound
+
+    for name, id in pairs(nids) do
+        local shouldSelect = IsNodeUseful(id, profKey, isBackground)
+        
+        if shouldSelect ~= nil then
+            if dbFilter[id] ~= shouldSelect then
+                dbFilter[id] = shouldSelect
+                changesMade = true
+
+                -- Notifications (SUPPRESSED DURING LOGIN GRACE PERIOD)
+                if not loginGracePeriod then
+                    local iconPath = GatherMate.nodeTextures[profKey][id]
+                    local iconString = iconPath and ("|T"..iconPath..":0|t ") or ""
+                    local profIcon = GetProfessionIcon(profKey)
+
+                    if shouldSelect then
+                        DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99GatherMate2:|r Auto-selected " .. profIcon .. iconString .. "|cffffffff" .. name .. "|r")
+                        
+                        local prettyIcon = iconPath and ("|T"..iconPath..":20:20|t ") or ""
+                        UIErrorsFrame:AddMessage(prettyIcon .. "You can now collect " .. name .. "!", 1.0, 0.82, 0.0, 1.0, UIERRORS_HOLD_TIME) 
+                        
+                        if playSound and isBackground then 
+                            PlaySound("igQuestListComplete") 
+                        end
+                    else
+                        DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99GatherMate2:|r Auto-unselected " .. profIcon .. iconString .. "|cffaaaaaa" .. name .. "|r")
+                    end
+                end
+            end
+        end
+    end
+
+    if changesMade then Config:SendMessage("GatherMate2ConfigChanged") end
+end
+
+-- Hat Reminder Logic
+local function CheckHatBuffs()
+    local db = GatherMate.db.profile
+    if not db.checkHats then return end
+    if loginGracePeriod then return end -- Don't warn on login
+
+    -- Throttle: Check every 60 seconds max to avoid spam
+    local now = GetTime()
+    if (now - lastHatWarning) < 60 then return end
+
+    local warningTriggered = false
+
+    -- Check Herb Hat (If Profession Learned)
+    if GetProfessionSkill("Herb Gathering") > 0 and GetItemCount(HAT_IDS.HERB) > 0 then
+        local name = UnitAura("player", BUFF_NAMES.HERB)
+        if not name then
+            UIErrorsFrame:AddMessage("|TInterface\\Icons\\Trade_Herbalism:20:20|t Equip your Herbalist's Hat to refresh the buff!", 1.0, 0.0, 0.0, 1.0, UIERRORS_HOLD_TIME)
+            warningTriggered = true
+        end
+    end
+
+    -- Check Mine Hat (If Profession Learned)
+    if not warningTriggered and GetProfessionSkill("Mining") > 0 and GetItemCount(HAT_IDS.MINE) > 0 then
+        local name = UnitAura("player", BUFF_NAMES.MINE)
+        if not name then
+            UIErrorsFrame:AddMessage("|TInterface\\Icons\\Trade_Mining:20:20|t Equip your Miner's Hat to refresh the buff!", 1.0, 0.0, 0.0, 1.0, UIERRORS_HOLD_TIME)
+            warningTriggered = true
+        end
+    end
+
+    if warningTriggered then
+        lastHatWarning = now
+        PlaySound("RaidWarning") -- Audible alert
+    end
+end
+
+-- Generates the dynamic list for the UI
+local function GetColoredNodeList(profKey)
+    local new = {}
+    local minHarvestTable = GatherMate.nodeMinHarvest[profKey] or {}
+    local currentSkill = GetProfessionSkill(profKey)
+    local db = GatherMate.db.profile
+    local settings = (db.customSettings and db.customSettings[profKey]) or {}
+    
+    for name, id in pairs(GatherMate.nodeIDs[profKey]) do
+        local lvl = minHarvestTable[id] or 0
+        local color = GetSkillColor(lvl, currentSkill)
+        local paddedLvl = string.format("%03d", lvl)
+        local label
+        
+        if lvl > 0 then label = string.format("|cff%s(%s) %s|r", color, paddedLvl, name)
+        else label = name end
+        
+        if settings.sortLevel and lvl > 0 then
+            local sortKey = paddedLvl .. "_" .. name
+            new[sortKey] = label
+        else
+            new[name] = label
+        end
+    end
+    return new
+end
+
+-- Wrappers for AceConfig
+local function GetHerbList() return GetColoredNodeList("Herb Gathering") end
+local function GetMineList() return GetColoredNodeList("Mining") end
+local function GetTreasureList() return GetColoredNodeList("Treasure") end
+local function GetWoodList() return GetColoredNodeList("Woodcutting") end
+
+-- [[ CUSTOM HELPER FUNCTIONS END ------------------------------------------- ]]
 
 -- Setup keybinds (these need to be global strings to show up properly in ESC -> Key Bindings)
 BINDING_HEADER_GatherMate = "GatherMate2"
@@ -226,6 +469,27 @@ options.args.display.args.general = {
 						SaveBindings(GetCurrentBindingSet())
 					end,
 				},
+                -- [[ CUSTOM: Minimap Button Toggle ]]
+                showMMButton = {
+                    order = 5.5,
+                    name = "Show Minimap Button",
+                    desc = "Toggles the minimap button.",
+                    type = "toggle",
+                    get = function() return not db.minimapIcon.hide end,
+                    set = function(info, val) 
+                        db.minimapIcon.hide = not val
+                        if val then DBIcon:Show("GatherMate2") else DBIcon:Hide("GatherMate2") end
+                    end,
+                },
+                -- [[ CUSTOM: Hat Reminder Toggle ]]
+                hatReminder = {
+                    order = 5.6,
+                    name = "|cffff8000Hat Buff Reminder|r",
+                    desc = "Displays a warning if you have a Gathering Hat in your bag but missing the speed buff.",
+                    type = "toggle",
+                    get = function() return db.checkHats end,
+                    set = function(info, val) db.checkHats = val end,
+                },
 				space = {
 					order = 6,
 					name = "",
@@ -357,6 +621,7 @@ options.args.display.args.general = {
 }
 
 -- Setup some storage arrays by db to sort node names and zones alphabetically
+-- LEGACY behavior for Fish/Gas
 local sortedFilter = setmetatable({}, {__index = function(t, k)
 	local new = {}
 	if k == "zones" then
@@ -397,13 +662,44 @@ function ConfigFilterHelper:SelectNone(info)
 	end
 	Config:UpdateConfig()
 end
+
+-- [[ CUSTOM: Manual Trigger Button ]]
+function ConfigFilterHelper:SelectUseful(info)
+    PerformAutoUpdate(info.arg, false)
+end
+
+-- [[ CUSTOM: Modifed SetState to handle Sorting Keys ]]
 function ConfigFilterHelper:SetState(info, k, state)
-	db.filter[info.arg][GatherMate.nodeIDs[info.arg][k]] = state
-	Config:UpdateConfig()
+    local realKey = ResolveNodeKey(k, info.arg)
+    local id = GatherMate.nodeIDs[info.arg][realKey]
+    if id then
+	    db.filter[info.arg][id] = state
+	    Config:UpdateConfig()
+    end
 end
+-- [[ CUSTOM: Modifed GetState to handle Sorting Keys ]]
 function ConfigFilterHelper:GetState(info, k)
-	return db.filter[info.arg][GatherMate.nodeIDs[info.arg][k]]
+    local realKey = ResolveNodeKey(k, info.arg)
+    local id = GatherMate.nodeIDs[info.arg][realKey]
+    if id then
+	    return db.filter[info.arg][id]
+    end
 end
+
+-- [[ CUSTOM: Toggle Helper for Custom Settings ]]
+local function CustomToggleGet(info) 
+    local prof = info.arg
+    local setting = info[#info] -- gets "autoUpdate", "sortLevel", etc from key name
+    return db.customSettings[prof] and db.customSettings[prof][setting]
+end
+local function CustomToggleSet(info, val) 
+    local prof = info.arg
+    local setting = info[#info]
+    if not db.customSettings[prof] then db.customSettings[prof] = {} end
+    db.customSettings[prof][setting] = val
+    if setting == "autoUpdate" and val then PerformAutoUpdate(prof, false) end
+end
+
 
 local ImportHelper = {}
 
@@ -457,12 +753,18 @@ options.args.display.args.filters = {
 	handler = ConfigFilterHelper,
 	args = {},
 }
+
+-- [[ CUSTOM: Modified HERB Filter Menu ]]
 options.args.display.args.filters.args.herbs = {
 	type = "group",
 	name = L["Herb filter"],
 	desc = L["Select the herb nodes you wish to display."],
 	args = {
 		desc = commonFiltersDescTable,
+        currentSkill = { order = 0.05, type = "description", fontSize = "medium", name = function() return GetSkillDisplayText("Herb Gathering") end, },
+        autoUpdate = { order = 0.1, name = "|cff00ff00Enable Auto-Update|r", desc = "Auto-selects Orange/Yellow nodes based on skill.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Herb Gathering", width = "full", },
+        sortLevel = { order = 0.2, name = "Sort by Level", desc = "Sort list by skill requirement.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Herb Gathering", width = "half", },
+        sound = { order = 0.3, name = "Sound", desc = "Play sound on new useful node.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Herb Gathering", width = "half", },
 		select_all = {
 			order = 1,
 			name = L["Select All"],
@@ -479,23 +781,36 @@ options.args.display.args.filters.args.herbs = {
 			func = "SelectNone",
 			arg = "Herb Gathering",
 		},
+        select_useful = { 
+            order = 2.5, 
+            name = "Force Update Now", 
+            type = "execute", 
+            func = "SelectUseful", 
+            arg = "Herb Gathering", 
+        },
 		herblist = {
 			order = 3,
 			name = L["Herb Bushes"],
 			type = "multiselect",
-			values = sortedFilter["Herb Gathering"],
+			values = GetHerbList,
 			set = "SetState",
 			get = "GetState",
 			arg = "Herb Gathering",
 		},
 	},
 }
+
+-- [[ CUSTOM: Modified MINING Filter Menu ]]
 options.args.display.args.filters.args.mines = {
 	type = "group",
 	name = L["Mine filter"],
 	desc = L["Select the mining nodes you wish to display."],
 	args = {
 		desc = commonFiltersDescTable,
+        currentSkill = { order = 0.05, type = "description", fontSize = "medium", name = function() return GetSkillDisplayText("Mining") end, },
+        autoUpdate = { order = 0.1, name = "|cff00ff00Enable Auto-Update|r", desc = "Auto-selects Orange/Yellow nodes based on skill.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Mining", width = "full", },
+        sortLevel = { order = 0.2, name = "Sort by Level", desc = "Sort list by skill requirement.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Mining", width = "half", },
+        sound = { order = 0.3, name = "Sound", desc = "Play sound on new useful node.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Mining", width = "half", },
 		select_all = {
 			order = 1,
 			name = L["Select All"],
@@ -512,11 +827,12 @@ options.args.display.args.filters.args.mines = {
 			func = "SelectNone",
 			arg = "Mining",
 		},
+        select_useful = { order = 2.5, name = "Force Update Now", type = "execute", func = "SelectUseful", arg = "Mining", },
 		minelist = {
 			order = 3,
 			name = L["Mineral Veins"],
 			type = "multiselect",
-			values = sortedFilter["Mining"],
+			values = GetMineList,
 			set = "SetState",
 			get = "GetState",
 			arg = "Mining",
@@ -589,11 +905,18 @@ options.args.display.args.filters.args.gas = {
 		},
 	},
 }
+
+-- [[ CUSTOM: Modified TREASURE Filter Menu ]]
 options.args.display.args.filters.args.treasure = {
 	type = "group",
 	name = L["Treasure filter"],
+    desc = "Requires Lockpicking for auto-update on locked chests.",
 	args = {
 		desc = commonFiltersDescTable,
+        currentSkill = { order = 0.05, type = "description", fontSize = "medium", name = function() return GetSkillDisplayText("Treasure") end, },
+        autoUpdate = { order = 0.1, name = "|cff00ff00Enable Auto-Update|r", desc = "Auto-selects Orange/Yellow nodes based on skill.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Treasure", width = "full", },
+        sortLevel = { order = 0.2, name = "Sort by Level", desc = "Sort list by skill requirement.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Treasure", width = "half", },
+        sound = { order = 0.3, name = "Sound", desc = "Play sound on new useful node.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Treasure", width = "half", },
 		select_all = {
 			order = 1,
 			name = L["Select All"],
@@ -610,23 +933,30 @@ options.args.display.args.filters.args.treasure = {
 			func = "SelectNone",
 			arg = "Treasure",
 		},
+        select_useful = { order = 2.5, name = "Force Update Now", type = "execute", func = "SelectUseful", arg = "Treasure", },
 		gaslist = {
 			order = 3,
 			name = L["Treasure"],
 			desc = L["Select the treasure you wish to display."],
 			type = "multiselect",
-			values = sortedFilter["Treasure"],
+			values = GetTreasureList,
 			set = "SetState",
 			get = "GetState",
 			arg = "Treasure",
 		},
 	},
 }
+
+-- [[ CUSTOM: Modified WOODCUTTING Filter Menu ]]
 options.args.display.args.filters.args.woodcutting = {
 	type = "group",
 	name = L["Woodcutting filter"],
 	args = {
 		desc = commonFiltersDescTable,
+        currentSkill = { order = 0.05, type = "description", fontSize = "medium", name = function() return GetSkillDisplayText("Woodcutting") end, },
+        autoUpdate = { order = 0.1, name = "|cff00ff00Enable Auto-Update|r", desc = "Auto-selects Orange/Yellow nodes based on skill.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Woodcutting", width = "full", },
+        sortLevel = { order = 0.2, name = "Sort by Level", desc = "Sort list by skill requirement.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Woodcutting", width = "half", },
+        sound = { order = 0.3, name = "Sound", desc = "Play sound on new useful node.", type = "toggle", get = CustomToggleGet, set = CustomToggleSet, arg = "Woodcutting", width = "half", },
 		select_all = {
 			order = 1,
 			name = L["Select All"],
@@ -643,12 +973,13 @@ options.args.display.args.filters.args.woodcutting = {
 			func = "SelectNone",
 			arg = "Woodcutting",
 		},
+        select_useful = { order = 2.5, name = "Force Update Now", type = "execute", func = "SelectUseful", arg = "Woodcutting", },
 		gaslist = {
 			order = 3,
 			name = L["Treasure"],
 			desc = L["Select the woodcutting nodes you wish to display."],
 			type = "multiselect",
-			values = sortedFilter["Woodcutting"],
+			values = GetWoodList,
 			set = "SetState",
 			get = "GetState",
 			arg = "Woodcutting",
@@ -1287,6 +1618,19 @@ function Config:OnInitialize()
 	db = GatherMate.db.profile
 	if not db.ignored_players then db.ignored_players = {} end
 	if not db.SinkOptions then db.SinkOptions = {} end
+    
+    -- [[ CUSTOM: Initialize Custom Settings Table ]]
+    if not db.customSettings then db.customSettings = {} end
+    if not db.minimapIcon then db.minimapIcon = { hide = false } end
+    -- [[ CUSTOM: Force Hat Reminder OFF on reload/login ]]
+    db.checkHats = false
+    
+    -- [[ CUSTOM: Cache Initial Skills ]]
+    lastSkills["Herb Gathering"] = GetProfessionSkill("Herb Gathering")
+    lastSkills["Mining"] = GetProfessionSkill("Mining")
+    lastSkills["Woodcutting"] = GetProfessionSkill("Woodcutting")
+    lastSkills["Treasure"] = GetProfessionSkill("Treasure")
+
 	GatherMate:SetSinkStorage(db.SinkOptions)
 	options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(GatherMate2.db)
 	options.args.output = GatherMate:GetSinkAce3OptionsDataTable()
@@ -1301,24 +1645,148 @@ function Config:OnInitialize()
 	self.optionsFrame.Profiles = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Profiles"], "GatherMate2", "profiles")
 	self.optionsFrame.DataShare = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Share Data"], "GatherMate2", "sharedata")
 	self.optionsFrame.Output = AceConfigDialog:AddToBlizOptions("GatherMate2", L["Output"], "GatherMate2", "output")
-	--AceConfigDialog:AddToBlizOptions("GatherMate2", "GatherMate2")
 	self:RegisterChatCommand("gathermate", function() AceConfigDialog:Open("GatherMate2") end )
 	self:RegisterMessage("GatherMate2ConfigChanged")
 	if DataBroker then
 		local launcher = DataBroker:NewDataObject("GatherMate2", {
 		    type = "launcher",
 		    icon = "Interface\\AddOns\\GatherMate2\\Artwork\\Icon.tga",
-		    OnClick = function(clickedframe, button) AceConfigDialog:Open("GatherMate2") end,
+		    OnClick = function(clickedframe, button) 
+                if button == "RightButton" then
+                    -- Right-Click: Toggle Icons (Show/Hide Nodes)
+                    local db = GatherMate.db.profile
+                    db.showMinimap = not db.showMinimap
+                    Config:UpdateConfig()
+                elseif IsAltKeyDown() and button == "LeftButton" then
+                    -- Alt+Left-Click: Toggle Hat Reminder
+                    local db = GatherMate.db.profile
+                    db.checkHats = not db.checkHats
+                    local state = db.checkHats and "|cff00ff00ON|r" or "|cffff0000OFF|r"
+                    print("|cff33ff99GatherMate2:|r Hat Reminder is now " .. state)
+                else
+                    -- Left-Click: Toggle Options Window
+                    local ACD = LibStub("AceConfigDialog-3.0")
+                    if ACD.OpenFrames["GatherMate2"] then
+                        ACD:Close("GatherMate2")
+                    else
+                        ACD:Open("GatherMate2")
+                    end
+                end
+            end,
+            -- [[ CUSTOM: Tooltip for Minimap Icon ]]
+            OnTooltipShow = function(tooltip)
+                tooltip:AddLine("GatherMate2")
+                tooltip:AddLine(" ")
+                
+                local skills = {
+                    { key = "Herb Gathering", name = "Herbalism", icon = "|TInterface\\Icons\\Trade_Herbalism:14|t" },
+                    { key = "Mining", name = "Mining", icon = "|TInterface\\Icons\\Trade_Mining:14|t" },
+                    { key = "Woodcutting", name = "Woodcutting", icon = "|TInterface\\Icons\\INV_TradeskillItem_03:14|t" },
+                    { key = "Treasure", name = "Lockpicking", icon = "|TInterface\\Icons\\Spell_Nature_MoonKey:14|t" },
+                }
+                
+                -- Show Learned Skills
+                for _, s in ipairs(skills) do
+                    local lvl = GetProfessionSkill(s.key)
+                    if lvl > 0 then
+                         tooltip:AddDoubleLine(s.icon .. " " .. s.name, lvl, 1,1,1, 0,1,0)
+                    end
+                end
+                
+                -- Shift-Hover Logic
+                if IsShiftKeyDown() then
+                    tooltip:AddLine(" ")
+                    tooltip:AddLine("Skill-up Nodes:", 1, 0.8, 0)
+                    local foundAny = false
+                    
+                    for _, s in ipairs(skills) do
+                        local skill = GetProfessionSkill(s.key)
+                        if skill > 0 then
+                            local nodes = {}
+                            local minHarvestTable = GatherMate.nodeMinHarvest[s.key] or {}
+                            
+                            for name, id in pairs(GatherMate.nodeIDs[s.key]) do
+                                local req = minHarvestTable[id]
+                                if req and req > 0 then
+                                    local color = GetSkillColor(req, skill)
+                                    -- Only list Orange/Yellow
+                                    if color == "ff9900" or color == "ffff00" then
+                                        table.insert(nodes, { name = name, lvl = req, color = color })
+                                    end
+                                end
+                            end
+                            
+                            if #nodes > 0 then
+                                foundAny = true
+                                table.sort(nodes, function(a,b) return a.lvl < b.lvl end)
+                                tooltip:AddLine(s.icon .. " " .. s.name)
+                                for _, n in ipairs(nodes) do
+                                    -- Indent slightly, show name and level
+                                    tooltip:AddLine("   |cff" .. n.color .. "(" .. n.lvl .. ") " .. n.name .. "|r")
+                                end
+                            end
+                        end
+                    end
+                    if not foundAny then
+                         tooltip:AddLine("   None", 0.5, 0.5, 0.5)
+                    end
+                else
+                    tooltip:AddLine(" ")
+                    tooltip:AddLine("|cffaaaaaaAlt+Left-Click: Toggle Hat Reminder|r")
+                    tooltip:AddLine("|cffaaaaaaLeft-Click: Open Options|r")
+                    tooltip:AddLine("|cffaaaaaaRight-Click: Toggle Icons|r")
+                    tooltip:AddLine("|cffaaaaaaShift-Hover: Show Skill-up Nodes|r")
+                end
+            end,
 		})
+        -- [[ CUSTOM: Register Minimap Icon using LibDBIcon ]]
+        if DBIcon then
+            DBIcon:Register("GatherMate2", launcher, db.minimapIcon)
+        end
 	end
 end
 
 function Config:OnEnable()
 	self:CheckAutoImport()
+    
+    -- [[ CUSTOM: Register Events ]]
+    self:RegisterEvent("SKILL_LINES_CHANGED", function() 
+        local curHerb = GetProfessionSkill("Herb Gathering")
+        if curHerb ~= lastSkills["Herb Gathering"] then lastSkills["Herb Gathering"] = curHerb; PerformAutoUpdate("Herb Gathering", true) end
+        local curMine = GetProfessionSkill("Mining")
+        if curMine ~= lastSkills["Mining"] then lastSkills["Mining"] = curMine; PerformAutoUpdate("Mining", true) end
+        local curWood = GetProfessionSkill("Woodcutting")
+        if curWood ~= lastSkills["Woodcutting"] then lastSkills["Woodcutting"] = curWood; PerformAutoUpdate("Woodcutting", true) end
+        local curLock = GetProfessionSkill("Treasure")
+        if curLock ~= lastSkills["Treasure"] then lastSkills["Treasure"] = curLock; PerformAutoUpdate("Treasure", true) end
+    end)
+    
+    -- Hook for Buff Checking
+    self:RegisterEvent("UNIT_AURA", CheckHatBuffs)
+    self:RegisterEvent("BAG_UPDATE", CheckHatBuffs)
+
+    -- Login Grace Period Timer (10 seconds to silence login spam)
+    local timerFrame = CreateFrame("Frame")
+    local totalElapsed = 0
+    timerFrame:SetScript("OnUpdate", function(self, elapsed)
+        totalElapsed = totalElapsed + elapsed
+        if totalElapsed > 10 then
+            loginGracePeriod = false
+            self:SetScript("OnUpdate", nil) -- Stop timer
+        end
+    end)
 end
 
 function Config:UpdateConfig()
 	self:SendMessage("GatherMate2ConfigChanged")
+    -- [[ CUSTOM: Update Minimap Icon Desaturation ]]
+    if DBIcon then
+        -- Safe check if button exists before accessing
+        local button = _G["LibDBIcon10_GatherMate2"]
+        if button and button.icon then
+            button.icon:SetDesaturated(not db.showMinimap)
+        end
+    end
 end
 
 function Config:GatherMate2ConfigChanged()
