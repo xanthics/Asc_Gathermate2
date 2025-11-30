@@ -18,14 +18,6 @@ local DBIcon = LibStub("LibDBIcon-1.0", true)
 -- Flag to suppress spam on login
 local loginGracePeriod = true
 
--- Variable to store last known skills to prevent cross-talk updates
-local lastSkills = {
-    ["Herb Gathering"] = -1,
-    ["Mining"] = -1,
-    ["Woodcutting"] = -1,
-    ["Treasure"] = -1
-}
-
 -- Variables for Hat Reminder
 local lastHatWarning = 0
 local HAT_IDS = {
@@ -36,38 +28,6 @@ local BUFF_NAMES = {
     HERB = "Herbalism Speed",
     MINE = "Mining Speed"
 }
-
--- Safe method to get Skill (Vanilla/Ascension/WotLK compatible)
-local function GetSkillLevel(targetName)
-    local numSkills = GetNumSkillLines()
-    for i = 1, numSkills do
-        local skillName, _, _, skillRank, _, _, _, _, _, _, _, _, _ = GetSkillLineInfo(i)
-        
-        -- 1. Direct Match (English)
-        if skillName == targetName then
-            return skillRank
-        end
-        
-        -- 2. Translated Match (Safe Check)
-        -- We MUST check if targetName is a 'safe' key before asking L[] to avoid crashes
-        if targetName ~= "Lockpicking" and targetName ~= "Woodcutting" then
-            if skillName == L[targetName] then
-                return skillRank
-            end
-        end
-    end
-    return 0
-end
-
--- Routing function to get the correct skill based on the database key
-local function GetProfessionSkill(profKey)
-    if profKey == "Herb Gathering" then return GetSkillLevel("Herbalism")
-    elseif profKey == "Mining" then return GetSkillLevel("Mining")
-    elseif profKey == "Woodcutting" then return GetSkillLevel("Woodcutting")
-    elseif profKey == "Treasure" then return GetSkillLevel("Lockpicking")
-    end
-    return 0
-end
 
 -- Icon Getter for Tooltips/Messages
 local function GetProfessionIcon(profKey)
@@ -81,7 +41,7 @@ end
 
 -- Text Display for the Menu
 local function GetSkillDisplayText(profKey)
-    local skill = GetProfessionSkill(profKey)
+    local skill = GatherMate.skillRank[profKey]
     local name = (profKey == "Treasure") and "Lockpicking" or profKey
     if profKey == "Herb Gathering" then name = "Herbalism" end
     local icon = GetProfessionIcon(profKey)
@@ -129,7 +89,7 @@ local function IsNodeUseful(nodeID, profKey, isBackground)
         return true 
     end 
 
-    local currentSkill = GetProfessionSkill(profKey)
+    local currentSkill = GatherMate.skillRank[profKey]
 
     if currentSkill < req then return false -- Red
     elseif currentSkill >= (req + 50) then return false -- Green/Grey
@@ -138,7 +98,7 @@ local function IsNodeUseful(nodeID, profKey, isBackground)
 end
 
 -- Auto-Update Worker
-local function PerformAutoUpdate(profKey, isBackground)
+function GatherMate:PerformAutoUpdate(profKey, isBackground)
     local db = GatherMate.db.profile
     if not db.customSettings or not db.customSettings[profKey] then return end
     if isBackground and not db.customSettings[profKey].autoUpdate then return end
@@ -195,7 +155,7 @@ local function CheckHatBuffs()
     local warningTriggered = false
 
     -- Check Herb Hat (If Profession Learned)
-    if GetProfessionSkill("Herb Gathering") > 0 and GetItemCount(HAT_IDS.HERB) > 0 then
+    if GatherMate.skillRank["Herb Gathering"] > 0 and GetItemCount(HAT_IDS.HERB) > 0 then
         local name = UnitAura("player", BUFF_NAMES.HERB)
         if not name then
             UIErrorsFrame:AddMessage("|TInterface\\Icons\\Trade_Herbalism:20:20|t Equip your Herbalist's Hat to refresh the buff!", 1.0, 0.0, 0.0, 1.0, UIERRORS_HOLD_TIME)
@@ -204,7 +164,7 @@ local function CheckHatBuffs()
     end
 
     -- Check Mine Hat (If Profession Learned)
-    if not warningTriggered and GetProfessionSkill("Mining") > 0 and GetItemCount(HAT_IDS.MINE) > 0 then
+    if not warningTriggered and GatherMate.skillRank["Mining"] > 0 and GetItemCount(HAT_IDS.MINE) > 0 then
         local name = UnitAura("player", BUFF_NAMES.MINE)
         if not name then
             UIErrorsFrame:AddMessage("|TInterface\\Icons\\Trade_Mining:20:20|t Equip your Miner's Hat to refresh the buff!", 1.0, 0.0, 0.0, 1.0, UIERRORS_HOLD_TIME)
@@ -222,7 +182,7 @@ end
 local function GetColoredNodeList(profKey)
     local new = {}
     local minHarvestTable = GatherMate.nodeMinHarvest[profKey] or {}
-    local currentSkill = GetProfessionSkill(profKey)
+    local currentSkill = GatherMate.skillRank[profKey]
     local db = GatherMate.db.profile
     local settings = (db.customSettings and db.customSettings[profKey]) or {}
     
@@ -665,7 +625,7 @@ end
 
 -- [[ CUSTOM: Manual Trigger Button ]]
 function ConfigFilterHelper:SelectUseful(info)
-    PerformAutoUpdate(info.arg, false)
+    GatherMate:PerformAutoUpdate(info.arg, false)
 end
 
 -- [[ CUSTOM: Modifed SetState to handle Sorting Keys ]]
@@ -697,7 +657,7 @@ local function CustomToggleSet(info, val)
     local setting = info[#info]
     if not db.customSettings[prof] then db.customSettings[prof] = {} end
     db.customSettings[prof][setting] = val
-    if setting == "autoUpdate" and val then PerformAutoUpdate(prof, false) end
+    if setting == "autoUpdate" and val then GatherMate:PerformAutoUpdate(prof, false) end
 end
 
 
@@ -1625,12 +1585,6 @@ function Config:OnInitialize()
     -- [[ CUSTOM: Force Hat Reminder OFF on reload/login ]]
     db.checkHats = false
     
-    -- [[ CUSTOM: Cache Initial Skills ]]
-    lastSkills["Herb Gathering"] = GetProfessionSkill("Herb Gathering")
-    lastSkills["Mining"] = GetProfessionSkill("Mining")
-    lastSkills["Woodcutting"] = GetProfessionSkill("Woodcutting")
-    lastSkills["Treasure"] = GetProfessionSkill("Treasure")
-
 	GatherMate:SetSinkStorage(db.SinkOptions)
 	options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(GatherMate2.db)
 	options.args.output = GatherMate:GetSinkAce3OptionsDataTable()
@@ -1687,7 +1641,7 @@ function Config:OnInitialize()
                 
                 -- Show Learned Skills
                 for _, s in ipairs(skills) do
-                    local lvl = GetProfessionSkill(s.key)
+                    local lvl = GatherMate.skillRank[s.key]
                     if lvl > 0 then
                          tooltip:AddDoubleLine(s.icon .. " " .. s.name, lvl, 1,1,1, 0,1,0)
                     end
@@ -1700,7 +1654,7 @@ function Config:OnInitialize()
                     local foundAny = false
                     
                     for _, s in ipairs(skills) do
-                        local skill = GetProfessionSkill(s.key)
+                        local skill = GatherMate.skillRank[s.key]
                         if skill > 0 then
                             local nodes = {}
                             local minHarvestTable = GatherMate.nodeMinHarvest[s.key] or {}
@@ -1748,18 +1702,6 @@ end
 
 function Config:OnEnable()
 	self:CheckAutoImport()
-    
-    -- [[ CUSTOM: Register Events ]]
-    self:RegisterEvent("SKILL_LINES_CHANGED", function() 
-        local curHerb = GetProfessionSkill("Herb Gathering")
-        if curHerb ~= lastSkills["Herb Gathering"] then lastSkills["Herb Gathering"] = curHerb; PerformAutoUpdate("Herb Gathering", true) end
-        local curMine = GetProfessionSkill("Mining")
-        if curMine ~= lastSkills["Mining"] then lastSkills["Mining"] = curMine; PerformAutoUpdate("Mining", true) end
-        local curWood = GetProfessionSkill("Woodcutting")
-        if curWood ~= lastSkills["Woodcutting"] then lastSkills["Woodcutting"] = curWood; PerformAutoUpdate("Woodcutting", true) end
-        local curLock = GetProfessionSkill("Treasure")
-        if curLock ~= lastSkills["Treasure"] then lastSkills["Treasure"] = curLock; PerformAutoUpdate("Treasure", true) end
-    end)
     
     -- Hook for Buff Checking
     self:RegisterEvent("UNIT_AURA", CheckHatBuffs)

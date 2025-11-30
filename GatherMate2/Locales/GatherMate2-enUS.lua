@@ -183,6 +183,7 @@ L["Toggle showing the tracking circle."] = true
 L["Toggle showing treasure nodes."] = true
 L["Tracking Circle Color"] = true
 L["Tracking Distance"] = true
+L["Lockpicking"] = true
 L["Treasure"] = true
 L["Treasure filter"] = true
 L["Wrath of the Lich King"] = true

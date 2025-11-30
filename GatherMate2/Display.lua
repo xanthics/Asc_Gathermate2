@@ -293,28 +293,26 @@ function Display:OnDisable()
 	self:UnregisterEvent("MINIMAP_UPDATE_TRACKING")
 end
 
+GatherMate.skillRank = {
+    ["Herb Gathering"] = 0,
+    ["Mining"] = 0,
+    ["Woodcutting"] = 0,
+    ["Treasure"] = 0
+}
 
 function Display:SKILL_LINES_CHANGED()
-	local skillname, isHeader
 	for k,v in pairs(have_prof_skill) do
 		have_prof_skill[k] = nil
 	end
 
-	local inProfessions = false
-	local inSecondary = false
-
 	for i = 1, GetNumSkillLines() do
-		local skillName, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
-		if  skillName == "Professions" then
-			inProfessions = true
-		elseif  skillName == "Secondary Skills" then
-			inProfessions = false
-			inSecondary = true
-		elseif  skillName == "Weapon Skills" then
-			inSecondary = false
-		elseif  inProfessions == true or inSecondary == true then
-			if skillName and profession_to_skill[skillName] then
-				have_prof_skill[profession_to_skill[skillName]] = true
+		local skillName, _, _, skillRank = GetSkillLineInfo(i)
+		if skillName and profession_to_skill[skillName] then
+			local sname = profession_to_skill[skillName]
+			have_prof_skill[sname] = true
+			if GatherMate.skillRank[sname] ~= skillRank then
+				GatherMate.skillRank[sname] = skillRank
+				GatherMate:PerformAutoUpdate(sname, true)
 			end
 		end
 	end

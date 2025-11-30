@@ -317,6 +317,7 @@ Display:SetSkillProfession("Mining", L["Mining"])
 Display:SetSkillProfession("Fishing", L["Fishing"])
 Display:SetSkillProfession("Extract Gas", L["Engineering"])
 Display:SetSkillProfession("Woodcutting", L["Woodcutting"])
+Display:SetSkillProfession("Treasure", L["Lockpicking"])
 
 --[[
 	Textures for display
