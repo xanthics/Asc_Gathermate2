@@ -301,8 +301,15 @@ GatherMate.skillRank = {
 }
 
 function Display:SKILL_LINES_CHANGED()
+	-- reset tracking of skills in case a skill is unlearned
 	for k,v in pairs(have_prof_skill) do
 		have_prof_skill[k] = nil
+	end
+
+	local skillCache = {}
+	for k, v in pairs(GatherMate.skillRank) do
+		skillCache[k] = v
+		GatherMate.skillRank[k] = 0
 	end
 
 	for i = 1, GetNumSkillLines() do
@@ -310,7 +317,7 @@ function Display:SKILL_LINES_CHANGED()
 		if skillName and profession_to_skill[skillName] then
 			local sname = profession_to_skill[skillName]
 			have_prof_skill[sname] = true
-			if GatherMate.skillRank[sname] ~= skillRank then
+			if skillCache[sname] ~= skillRank then
 				GatherMate.skillRank[sname] = skillRank
 				GatherMate:PerformAutoUpdate(sname, true)
 			end
