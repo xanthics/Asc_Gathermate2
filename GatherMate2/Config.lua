@@ -76,18 +76,14 @@ local function ResolveNodeKey(key, profKey)
 end
 
 -- Logic to determine if a node should be selected
-local function IsNodeUseful(nodeID, profKey, isBackground)
+local function IsNodeUseful(nodeID, profKey)
     local minHarvestTable = GatherMate.nodeMinHarvest[profKey]
     if not minHarvestTable then return nil end
 
     local req = minHarvestTable[nodeID]
     
-    -- Special Case: No level requirement (e.g. Dirt Piles, Gas)
-    if not req or req == 0 then 
-        -- If this is a background auto-update, DO NOT touch generic items.
-        if isBackground then return nil end
-        return true 
-    end 
+    -- Special Case: No level requirement (e.g. Dirt Piles, Gas). DO NOT touch generic items
+    if not req or req == 0 then return nil end 
 
     local currentSkill = GatherMate.skillRank[profKey]
 
@@ -109,7 +105,7 @@ function GatherMate:PerformAutoUpdate(profKey, isBackground)
     local playSound = db.customSettings[profKey].sound
 
     for name, id in pairs(nids) do
-        local shouldSelect = IsNodeUseful(id, profKey, isBackground)
+        local shouldSelect = IsNodeUseful(id, profKey)
         
         if shouldSelect ~= nil then
             if dbFilter[id] ~= shouldSelect then
