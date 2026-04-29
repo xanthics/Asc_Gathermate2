@@ -17,7 +17,7 @@ local db
 local defaults = {
 	global = {
 		settings = {
-			enabled       = true,
+			enabled       = false,
 
 			self_color    = { 1, 1, 1, 1 },
 			hud_scale     = 1,
