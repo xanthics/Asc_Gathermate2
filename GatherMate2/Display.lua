@@ -159,9 +159,8 @@ end
 ]]
 local function addTomTomWaypoint(button,pin)
 	if TomTom then
-		local c, z = GetCurrentMapContinent(), GetCurrentMapZone()
 		local x, y, level = GatherMate.mapData:DecodeLoc(pin.coords)
-		TomTom:AddZWaypoint(c, z, x*100, y*100, pin.title, nil, true, true)
+		TomTom:AddZWaypoint(GetCurrentMapContinent(), pin.zone, x*100, y*100, pin.title, nil, true, true)
 	end
 end
 --[[
@@ -293,28 +292,33 @@ function Display:OnDisable()
 	self:UnregisterEvent("MINIMAP_UPDATE_TRACKING")
 end
 
+GatherMate.skillRank = {
+    ["Herb Gathering"] = 0,
+    ["Mining"] = 0,
+    ["Woodcutting"] = 0,
+    ["Treasure"] = 0
+}
 
 function Display:SKILL_LINES_CHANGED()
-	local skillname, isHeader
+	-- reset tracking of skills in case a skill is unlearned
 	for k,v in pairs(have_prof_skill) do
 		have_prof_skill[k] = nil
 	end
 
-	local inProfessions = false
-	local inSecondary = false
+	local skillCache = {}
+	for k, v in pairs(GatherMate.skillRank) do
+		skillCache[k] = v
+		GatherMate.skillRank[k] = 0
+	end
 
 	for i = 1, GetNumSkillLines() do
-		local skillName, _, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
-		if  skillName == "Professions" then
-			inProfessions = true
-		elseif  skillName == "Secondary Skills" then
-			inProfessions = false
-			inSecondary = true
-		elseif  skillName == "Weapon Skills" then
-			inSecondary = false
-		elseif  inProfessions == true or inSecondary == true then
-			if skillName and profession_to_skill[skillName] then
-				have_prof_skill[profession_to_skill[skillName]] = true
+		local skillName, _, _, skillRank = GetSkillLineInfo(i)
+		if skillName and profession_to_skill[skillName] then
+			local sname = profession_to_skill[skillName]
+			have_prof_skill[sname] = true
+			if skillCache[sname] ~= skillRank then
+				GatherMate.skillRank[sname] = skillRank
+				GatherMate:PerformAutoUpdate(sname, true)
 			end
 		end
 	end
@@ -531,11 +535,11 @@ function Display:addMiniPin(pin, refresh)
 			pin.isCircle = false
 		end
 
-		-- if distance > 1, then adapt node position to slide on the border, and set the node alpha accordingly
+		-- if distance > view radius, then adapt node position to slide on the border, and set the node alpha accordingly
 		local alpha = 1
 		if dist > Minimap:GetViewRadius() then
 			alpha = 1-(dist/(Minimap:GetViewRadius()*1.5))
-			if alpha < 0 then
+			if alpha < 0.05 then
 				pin.keep = nil
 			end
 		end
