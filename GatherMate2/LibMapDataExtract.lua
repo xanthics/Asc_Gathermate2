@@ -13,19 +13,22 @@ local mapToLocal = {}
 -- Don't know a better way
 -- Build list of areaIDs
 for i=0,9999 do
-	if C_WorldMap.GetWorldPosition(i, 0, 0) then -- and mapToLocal[C_WorldMap.GetMapFileByAreaID(i)] then
-		local x1, y1 = C_WorldMap.GetWorldPosition(i, 0, 0)
+	local x1, y1 = C_WorldMap.GetWorldPosition(i, 0, 0)
+	if x1 and y1 then -- and mapToLocal[C_WorldMap.GetMapFileByAreaID(i)] then
 		local x2, y2 = C_WorldMap.GetWorldPosition(i, 1, 1)
-        local mapfile = C_WorldMap.GetMapFileByAreaID(i)
-		nametoid[mapfile] = i
-        -- if map zoneid isn't valid then save mapfile name.  Prevents issue with MapLocalize
-		local zoneID = C_WorldMap.GetZoneIDByAreaID(i)
-		if zoneID > 0 then
-			mapToLocal[mapfile] = GetAreaName(zoneID)
-		else
-			mapToLocal[mapfile] = mapfile
+		local dx, dy = abs(x1-x2), abs(y1-y2)
+		if dx > 0 and dy > 0 then
+			local mapfile = C_WorldMap.GetMapFileByAreaID(i)
+			nametoid[mapfile] = i
+			-- if map zoneid isn't valid then save mapfile name.  Prevents issue with MapLocalize
+			local zoneID = C_WorldMap.GetZoneIDByAreaID(i)
+			if zoneID > 0 then
+				mapToLocal[mapfile] = GetAreaName(zoneID)
+			else
+				mapToLocal[mapfile] = mapfile
+			end
+			idtodxdy[i] = { [1] = dx, [2] = dy }
 		end
-        idtodxdy[i] = { [1] = abs(x1-x2), [2] = abs(y1-y2) }
 	end
 end
 

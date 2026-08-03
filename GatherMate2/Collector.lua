@@ -566,6 +566,7 @@ local treasure = {
 	[380229] = 535, -- Jinxed Hoodoo Pile (zg so 2x, 3x, 4x same nodes)
 	[480228] = 535, -- Jinxed Hoodoo Pile (zg so 2x, 3x, 4x same nodes)
 	[480229] = 535, -- Jinxed Hoodoo Pile (zg so 2x, 3x, 4x same nodes)
+	[254475] = 543, -- Miru Berry Bush
 	--Silithus
 	[967048] = 536, -- Hidden Cache
 	[967049] = 537, -- Rare Hidden Cache
@@ -602,6 +603,14 @@ local treasure = {
 	[967051] = 536, -- Hidden Cache
 	[967052] = 537, -- Rare Hidden Cache
 	[967053] = 538, -- Epic Hidden Cache
+	[164658] = 544, -- Blue Power Crystal
+	[164778] = 544, -- Blue Power Crystal
+	[164659] = 545, -- Green Power Crystal
+	[164779] = 545, -- Green Power Crystal
+	[164660] = 546, -- Red Power Crystal
+	[164780] = 546, -- Red Power Crystal
+	[164661] = 547, -- Yellow Power Crystal
+	[164781] = 547, -- Yellow Power Crystal
 }
 local trees = {
 	[244630] = 601, -- Ashenvale Tree
@@ -626,6 +635,7 @@ local trees = {
 	[244624] = 620, -- Tirisfal Tree
 	[244617] = 621, -- Westfall Tree
 	[244635] = 622, -- Winterspring Tree
+	[244638] = 623, -- Stranglethorn Palm
 }
 
 local lastNode_ID = 0

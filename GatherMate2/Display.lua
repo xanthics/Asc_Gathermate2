@@ -1,5 +1,5 @@
 local GatherMate = LibStub("AceAddon-3.0"):GetAddon("GatherMate2")
-local Display = GatherMate:NewModule("Display","AceEvent-3.0")
+local Display = GatherMate:NewModule("Display","AceEvent-3.0", "AceBucket-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("GatherMate2")
 
 local Astrolabe = DongleStub("Astrolabe-0.4")
@@ -248,6 +248,7 @@ function Display:OnEnable()
 	self:RegisterEvent("WORLD_MAP_UPDATE", "UpdateWorldMap")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateMaps")
 	self:RegisterEvent("SKILL_LINES_CHANGED")
+	self:RegisterBucketEvent("BAG_UPDATE", 1, "SKILL_LINES_CHANGED")
 	self:RegisterEvent("MINIMAP_UPDATE_TRACKING")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD","UpdateMaps")
 	self:SKILL_LINES_CHANGED()
@@ -289,6 +290,7 @@ function Display:OnDisable()
 	self:UnregisterEvent("WORLD_MAP_UPDATE")
 	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:UnregisterEvent("SKILL_LINES_CHANGED")
+	self:UnregisterEvent("BAG_UPDATE")
 	self:UnregisterEvent("MINIMAP_UPDATE_TRACKING")
 end
 

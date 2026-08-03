@@ -218,6 +218,11 @@ local node_ids = {
 		[NL["Carnivorous Clam"]]				= 540, -- High Risk
 		[NL["Lava Bloom"]]						= 541, -- High Risk
 		[NL["Ravenous Scourgethorn"]]			= 542, -- High Risk
+		[NL["Miru Berry"]]						= 543, -- found in Azshara only
+		[NL["Blue Power Crystal"]]				= 544,
+		[NL["Green Power Crystal"]]				= 545,
+		[NL["Red Power Crystal"]]				= 546,
+		[NL["Yellow Power Crystal"]]			= 547,
 	},
 	["Woodcutting"] = {
 		[NL["Ashenvale Tree"]]					= 601,
@@ -242,6 +247,7 @@ local node_ids = {
 		[NL["Tirisfal Tree"]]					= 620,
 		[NL["Westfall Tree"]]					= 621,
 		[NL["Winterspring Tree"]]				= 622,
+		[NL["Stranglethorn Palm"]]				= 623,
 	}
 }
 GatherMate.nodeIDs = node_ids
@@ -315,6 +321,7 @@ Display:SetSkillProfession("Mining", L["Mining"])
 Display:SetSkillProfession("Fishing", L["Fishing"])
 Display:SetSkillProfession("Extract Gas", L["Engineering"])
 Display:SetSkillProfession("Woodcutting", L["Woodcutting"])
+Display:SetSkillProfession("Treasure", L["Lockpicking"])
 
 --[[
 	Textures for display
@@ -526,9 +533,14 @@ local node_textures = {
 		[540] = icon_path.."Treasure\\storm_brine_refined_rare.tga", 
 		[541] = icon_path.."Treasure\\lava_frond_blue_fume_zoom.tga", 
 		[542] = icon_path.."Treasure\\plague_blossom_refined_v5_64.tga", 
+		[543] = icon_path.."Treasure\\inv_misc_food_vendor_witchberries.tga",
+		[544] = icon_path.."Treasure\\inv_misc_gem_sapphire_03.tga",
+		[545] = icon_path.."Treasure\\inv_misc_gem_emerald_02.tga",
+		[546] = icon_path.."Treasure\\inv_misc_gem_ruby_03.tga",
+		[547] = icon_path.."Treasure\\inv_misc_gem_topaz_02.tga",
 	},
 	["Woodcutting"] = {
-		[601] = icon_path.."Tree\\SeasonedWoodLog", -- Ashenvale Tree
+		[601] = icon_path.."Tree\\SoftWoodLog", -- Ashenvale Tree
 		[602] = icon_path.."Tree\\HardWoodLog", -- Azshara Tree
 		[603] = icon_path.."Tree\\GreenWoodLog", -- Darkshore Tree
 		[604] = icon_path.."Tree\\GreenWoodLog", -- Dun Morogh Tree
@@ -550,6 +562,7 @@ local node_textures = {
 		[620] = icon_path.."Tree\\GreenWoodLog", -- Tirisfal Tree
 		[621] = icon_path.."Tree\\SoftWoodLog", -- Westfall Tree
 		[622] = icon_path.."Tree\\ElderWoodLog", -- Winterspring Tree
+		[623] = icon_path.."Tree\\SeasonedWoodLog", -- Stranglethorn Palm
 	},
 }
 GatherMate.nodeTextures = node_textures
@@ -709,6 +722,7 @@ local node_minharvest = {
 		[620] = 1,
 		[621] = 50,
 		[622] = 275,
+		[623] = 125,
 	},
 }
 GatherMate.nodeMinHarvest = node_minharvest
